@@ -1,31 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #14171c;
-  --ink-soft: #20242c;
-  --steel: #4b5563;
-  --steel-soft: #8891a0;
-  --paper: #f4f3ef;
-  --paper-dim: #eae8e1;
-  --amber: #f0a93b;
-  --amber-ink: #4a2f06;
-  --route: #2f6fed;
-  --line: rgba(20, 23, 28, 0.12);
-  --line-on-ink: rgba(244, 243, 239, 0.16);
+  --ink: #171717;
+  --steel: #6b7280;
+  --steel-soft: #9ca3af;
+  --paper: #ffffff;
+  --paper-alt: #f5f5f7;
+  --blue: #2e5eff;
+  --blue-tint: #eaf0ff;
+  --coral: #ff6b4a;
+  --coral-tint: #fff0ec;
+  --line: rgba(23, 23, 23, 0.08);
 }
 
 @theme inline {
   --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
   --color-steel: var(--steel);
   --color-steel-soft: var(--steel-soft);
   --color-paper: var(--paper);
-  --color-paper-dim: var(--paper-dim);
-  --color-amber: var(--amber);
-  --color-route: var(--route);
-  --font-display: var(--font-gothic-a1);
-  --font-sans: var(--font-plex-kr);
-  --font-mono: var(--font-plex-mono);
+  --color-paper-alt: var(--paper-alt);
+  --color-blue: var(--blue);
+  --color-blue-tint: var(--blue-tint);
+  --color-coral: var(--coral);
+  --color-coral-tint: var(--coral-tint);
+  --font-sans: var(--font-pretendard);
 }
 
 * {
@@ -39,7 +37,7 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-plex-kr), system-ui, sans-serif;
+  font-family: var(--font-pretendard), system-ui, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -56,61 +54,10 @@ body {
   }
 }
 
-/* 운송장(waybill) 스텁 — 시그니처 컴포넌트용 절취선 */
-.waybill-edge {
-  position: relative;
-}
-.waybill-edge::before {
-  content: "";
-  position: absolute;
-  left: -1px;
-  right: -1px;
-  top: 0;
-  border-top: 1.5px dashed currentColor;
-  opacity: 0.35;
-}
-
-@keyframes pulse-dot {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.45;
-    transform: scale(0.82);
-  }
-}
-.live-dot {
-  animation: pulse-dot 2.2s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .live-dot {
-    animation: none;
-  }
-}
-
-@keyframes ticker {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-.ticker-track {
-  animation: ticker 32s linear infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track {
-    animation: none;
-  }
-}
-
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -118,5 +65,23 @@ body {
   }
 }
 .rise-in {
-  animation: rise-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes blob-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-2%, 3%) scale(1.04);
+  }
+}
+.blob-float {
+  animation: blob-float 10s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .blob-float {
+    animation: none;
+  }
 }

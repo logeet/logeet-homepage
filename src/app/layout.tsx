@@ -1,23 +1,15 @@
 import type { Metadata } from "next";
-import { Gothic_A1, IBM_Plex_Sans_KR, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const gothicA1 = Gothic_A1({
-  variable: "--font-gothic-a1",
-  subsets: ["latin"],
-  weight: ["500", "700", "900"],
-});
-
-const plexKR = IBM_Plex_Sans_KR({
-  variable: "--font-plex-kr",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
+const pretendard = localFont({
+  variable: "--font-pretendard",
+  display: "swap",
+  src: [
+    { path: "../fonts/pretendard/Pretendard-Light.otf", weight: "300", style: "normal" },
+    { path: "../fonts/pretendard/Pretendard-Regular.otf", weight: "400", style: "normal" },
+    { path: "../fonts/pretendard/Pretendard-Bold.otf", weight: "700", style: "normal" },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -32,10 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="ko"
-      className={`${gothicA1.variable} ${plexKR.variable} ${plexMono.variable} h-full antialiased`}
-    >
+    <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-paper text-ink">{children}</body>
     </html>
   );

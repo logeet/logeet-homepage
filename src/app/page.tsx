@@ -1,6 +1,6 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
-import { TrustStrip } from "@/components/TrustStrip";
+import { ProductShowcase } from "@/components/ProductShowcase";
 import { Services } from "@/components/Services";
 import { WhyLogeet } from "@/components/WhyLogeet";
 import { CompanyInfo } from "@/components/CompanyInfo";
@@ -13,7 +13,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <TrustStrip />
+        <ProductShowcase />
         <Services />
         <WhyLogeet />
         <CompanyInfo />

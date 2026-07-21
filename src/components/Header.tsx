@@ -39,7 +39,7 @@ export function Header() {
             href={COMPANY.portalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-1.5 border border-ink/20 px-4 py-2 font-sans text-sm font-medium text-ink transition-colors hover:border-ink hover:bg-ink hover:text-paper"
+            className="group inline-flex items-center gap-1.5 rounded-xl bg-ink px-5 py-2.5 font-sans text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
           >
             고객사 로그인
             <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -74,7 +74,7 @@ export function Header() {
               href={COMPANY.portalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 flex items-center justify-between rounded border border-ink/20 px-3 py-2.5 font-sans text-sm font-medium text-ink"
+              className="mt-2 flex items-center justify-between rounded-xl bg-ink px-4 py-2.5 font-sans text-sm font-bold text-white"
             >
               고객사 로그인
               <ArrowUpRight className="size-4" />

@@ -3,40 +3,40 @@ import { Logo } from "./Logo";
 
 export function Footer() {
   return (
-    <footer className="border-t border-ink/10 bg-paper px-5 py-10 sm:px-8">
+    <footer className="border-t border-ink/6 bg-paper-alt px-5 py-12 sm:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col justify-between gap-8 sm:flex-row">
           <div>
             <Logo />
-            <dl className="mt-4 space-y-1 font-mono text-[11px] leading-relaxed text-steel-soft">
+            <dl className="mt-5 space-y-1 text-[13px] leading-relaxed text-steel">
               <div>
-                <dt className="inline">상호 </dt>
-                <dd className="inline text-steel">{COMPANY.name}</dd>
+                <dt className="inline text-steel-soft">상호 </dt>
+                <dd className="inline">{COMPANY.name}</dd>
               </div>
               <div>
-                <dt className="inline">대표 </dt>
-                <dd className="inline text-steel">{COMPANY.ceo}</dd>
+                <dt className="inline text-steel-soft">대표 </dt>
+                <dd className="inline">{COMPANY.ceo}</dd>
               </div>
               <div>
-                <dt className="inline">사업자등록번호 </dt>
-                <dd className="inline text-steel">{COMPANY.bizNo}</dd>
+                <dt className="inline text-steel-soft">사업자등록번호 </dt>
+                <dd className="inline">{COMPANY.bizNo}</dd>
               </div>
               <div>
-                <dt className="inline">주소 </dt>
-                <dd className="inline text-steel">{COMPANY.address}</dd>
+                <dt className="inline text-steel-soft">주소 </dt>
+                <dd className="inline">{COMPANY.address}</dd>
               </div>
               <div>
-                <dt className="inline">TEL </dt>
-                <dd className="inline text-steel">{COMPANY.phone}</dd>
+                <dt className="inline text-steel-soft">TEL </dt>
+                <dd className="inline">{COMPANY.phone}</dd>
               </div>
               <div>
-                <dt className="inline">Email </dt>
-                <dd className="inline text-steel">{COMPANY.email}</dd>
+                <dt className="inline text-steel-soft">Email </dt>
+                <dd className="inline">{COMPANY.email}</dd>
               </div>
             </dl>
           </div>
 
-          <div className="font-mono text-[11px] text-steel-soft sm:text-right">
+          <div className="text-[13px] text-steel-soft sm:text-right">
             <p>&copy; {new Date().getFullYear()} LOGEET Inc. All rights reserved.</p>
           </div>
         </div>
