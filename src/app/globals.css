@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #14171c;
+  --ink-soft: #20242c;
+  --steel: #4b5563;
+  --steel-soft: #8891a0;
+  --paper: #f4f3ef;
+  --paper-dim: #eae8e1;
+  --amber: #f0a93b;
+  --amber-ink: #4a2f06;
+  --route: #2f6fed;
+  --line: rgba(20, 23, 28, 0.12);
+  --line-on-ink: rgba(244, 243, 239, 0.16);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-steel: var(--steel);
+  --color-steel-soft: var(--steel-soft);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-amber: var(--amber);
+  --color-route: var(--route);
+  --font-display: var(--font-gothic-a1);
+  --font-sans: var(--font-plex-kr);
+  --font-mono: var(--font-plex-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-plex-kr), system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 운송장(waybill) 스텁 — 시그니처 컴포넌트용 절취선 */
+.waybill-edge {
+  position: relative;
+}
+.waybill-edge::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  right: -1px;
+  top: 0;
+  border-top: 1.5px dashed currentColor;
+  opacity: 0.35;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+.live-dot {
+  animation: pulse-dot 2.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .live-dot {
+    animation: none;
+  }
+}
+
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ticker-track {
+  animation: ticker 32s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise-in {
+  animation: rise-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
