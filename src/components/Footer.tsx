@@ -1,4 +1,5 @@
 import { COMPANY } from "@/lib/company";
+import { Logo } from "./Logo";
 
 export function Footer() {
   return (
@@ -6,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-col justify-between gap-8 sm:flex-row">
           <div>
-            <p className="font-display text-lg font-black tracking-tight text-ink">LOGEET</p>
+            <Logo />
             <dl className="mt-4 space-y-1 font-mono text-[11px] leading-relaxed text-steel-soft">
               <div>
                 <dt className="inline">상호 </dt>

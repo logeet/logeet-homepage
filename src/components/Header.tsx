@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { COMPANY } from "@/lib/company";
+import { Logo } from "./Logo";
 
 const NAV = [
   { href: "#services", label: "서비스" },
@@ -17,8 +18,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" className="font-display text-xl font-black tracking-tight text-ink">
-          LOGEET
+        <a href="#top" aria-label="LOGEET 홈으로 이동">
+          <Logo />
         </a>
 
         <nav className="hidden items-center gap-8 md:flex">
