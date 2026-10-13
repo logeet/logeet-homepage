@@ -10,41 +10,57 @@ const BARS = [
 /** 실사진 대신 사용하는 비주얼 — 자체 개발 수배송관리 시스템(ship.logeet.co.kr) 화면을 단순화한 목업입니다. */
 export function ProductMockup() {
   return (
-    <div className="w-full overflow-hidden rounded-[28px] border border-ink/5 bg-white shadow-[0_30px_60px_-20px_rgba(23,23,23,0.18)]">
-      <div className="flex items-center gap-2 border-b border-ink/6 bg-paper-alt px-5 py-3">
-        <span className="size-2.5 rounded-full bg-ink/12" />
-        <span className="size-2.5 rounded-full bg-ink/12" />
-        <span className="size-2.5 rounded-full bg-ink/12" />
-        <span className="ml-3 rounded-full bg-white px-3.5 py-1 text-[11px] font-medium text-steel">
+    <div className="w-full overflow-hidden bg-white">
+      <div className="flex items-center gap-2 border-b border-line bg-gray px-5 py-3">
+        <span className="size-2.5 rounded-full bg-slate-300" />
+        <span className="size-2.5 rounded-full bg-slate-300" />
+        <span className="size-2.5 rounded-full bg-slate-300" />
+        <span className="ml-3 border border-line bg-white px-3.5 py-1 text-[11px] font-medium text-body">
           ship.logeet.co.kr
         </span>
       </div>
       <div className="grid grid-cols-3 gap-2.5 p-4 sm:gap-3 sm:p-5">
         <MiniKpi label="이번달 계획" value="4,400만" />
-        <MiniKpi label="이번달 실적" value="3,000만" tone="blue" />
+        <MiniKpi label="이번달 실적" value="3,000만" tone="accent" />
         <MiniKpi label="집행률" value="68%" tone="ink" />
       </div>
       <div className="px-4 pb-5 sm:px-5">
-        <p className="mb-3 text-[12px] font-semibold text-steel">월별 계획 대비 실적</p>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <p className="text-[12px] font-semibold text-body">월별 계획 대비 실적</p>
+          <p className="flex items-center gap-2.5 text-[10px] text-body">
+            <Legend className="bg-slate-200">계획</Legend>
+            <Legend className="bg-blue">실적</Legend>
+            <Legend className="bg-orange">초과</Legend>
+          </p>
+        </div>
         <div className="flex h-28 items-end gap-2.5 sm:gap-3">
           {BARS.map((b) => (
             <div key={b.month} className="flex flex-1 flex-col items-center gap-1.5">
               <div className="flex h-24 w-full items-end justify-center gap-[3px]">
                 <div
-                  className="w-full rounded-t-md bg-ink/8"
+                  className="w-full rounded-t bg-slate-200"
                   style={{ height: `${b.plan}%` }}
                 />
                 <div
-                  className={`w-full rounded-t-md ${b.over ? "bg-coral" : "bg-blue"}`}
+                  className={`w-full rounded-t ${b.over ? "bg-orange" : "bg-blue"}`}
                   style={{ height: `${b.actual}%` }}
                 />
               </div>
-              <span className="text-[10px] font-medium text-steel-soft">{b.month}</span>
+              <span className="text-[10px] font-medium text-sub">{b.month}</span>
             </div>
           ))}
         </div>
       </div>
     </div>
+  );
+}
+
+function Legend({ className, children }: { className: string; children: React.ReactNode }) {
+  return (
+    <span className="flex items-center gap-1">
+      <span className={`size-2 rounded-sm ${className}`} />
+      {children}
+    </span>
   );
 }
 
@@ -55,12 +71,12 @@ function MiniKpi({
 }: {
   label: string;
   value: string;
-  tone?: "steel" | "blue" | "ink";
+  tone?: "steel" | "accent" | "ink";
 }) {
-  const color = tone === "blue" ? "text-blue" : tone === "ink" ? "text-ink" : "text-steel";
+  const color = tone === "accent" ? "text-blue" : tone === "ink" ? "text-ink" : "text-body";
   return (
-    <div className="rounded-2xl bg-paper-alt px-3 py-2.5">
-      <p className="text-[10px] font-medium text-steel-soft">{label}</p>
+    <div className="rounded-xl bg-gray px-3 py-2.5">
+      <p className="text-[10px] font-medium text-sub">{label}</p>
       <p className={`mt-0.5 text-base font-bold ${color} sm:text-lg`}>{value}</p>
     </div>
   );

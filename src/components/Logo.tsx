@@ -45,12 +45,12 @@ export function Logo({
   wordmark?: boolean;
 }) {
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className ?? ""}`}>
-      <LogoMark className={markClassName ?? "h-8 w-auto text-ink"} />
+    <span className={`inline-flex items-center gap-2.5 ${className ?? "text-ink"}`}>
+      <LogoMark className={markClassName ?? "h-8 w-auto"} />
       {wordmark && (
         <span className="flex items-baseline gap-1.5">
-          <span className="font-sans text-xl font-bold tracking-tight text-ink">LOGEET</span>
-          <span className="font-sans text-[11px] font-medium tracking-[0.3em] text-steel-soft">
+          <span className="font-sans text-xl font-bold tracking-tight">LOGEET</span>
+          <span className="font-sans text-[11px] font-medium tracking-[0.3em] opacity-60">
             로지트
           </span>
         </span>

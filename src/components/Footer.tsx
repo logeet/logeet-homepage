@@ -1,44 +1,36 @@
 import { COMPANY } from "@/lib/company";
 import { Logo } from "./Logo";
 
+const INFO: [string, string][] = [
+  ["상호", COMPANY.name],
+  ["대표", COMPANY.ceo],
+  ["사업자등록번호", COMPANY.bizNo],
+  ["설립", COMPANY.founded],
+  ["주소", COMPANY.address],
+  ["TEL", COMPANY.phone],
+  ["Email", COMPANY.email],
+];
+
 export function Footer() {
   return (
-    <footer className="border-t border-ink/6 bg-paper-alt px-5 py-12 sm:px-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col justify-between gap-8 sm:flex-row">
+    <footer className="border-t-2 border-white/15 bg-navy px-5 pt-14 pb-28 text-white sm:pb-14 sm:px-8">
+      <div className="mx-auto max-w-7xl">
+        <p className="text-[clamp(3rem,12vw,9rem)] font-bold leading-none tracking-tighter text-white/10" aria-hidden="true">
+          LOGEET
+        </p>
+        <div className="mt-10 flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
           <div>
-            <Logo />
-            <dl className="mt-5 space-y-1 text-[13px] leading-relaxed text-steel">
-              <div>
-                <dt className="inline text-steel-soft">상호 </dt>
-                <dd className="inline">{COMPANY.name}</dd>
-              </div>
-              <div>
-                <dt className="inline text-steel-soft">대표 </dt>
-                <dd className="inline">{COMPANY.ceo}</dd>
-              </div>
-              <div>
-                <dt className="inline text-steel-soft">사업자등록번호 </dt>
-                <dd className="inline">{COMPANY.bizNo}</dd>
-              </div>
-              <div>
-                <dt className="inline text-steel-soft">주소 </dt>
-                <dd className="inline">{COMPANY.address}</dd>
-              </div>
-              <div>
-                <dt className="inline text-steel-soft">TEL </dt>
-                <dd className="inline">{COMPANY.phone}</dd>
-              </div>
-              <div>
-                <dt className="inline text-steel-soft">Email </dt>
-                <dd className="inline">{COMPANY.email}</dd>
-              </div>
+            <Logo className="text-white" />
+            <dl className="mt-6 grid gap-x-8 gap-y-1.5 text-[13px] leading-relaxed text-white/70 sm:grid-cols-2">
+              {INFO.map(([k, v]) => (
+                <div key={k}>
+                  <dt className="inline text-white/50">{k} </dt>
+                  <dd className="inline">{v}</dd>
+                </div>
+              ))}
             </dl>
           </div>
-
-          <div className="text-[13px] text-steel-soft sm:text-right">
-            <p>&copy; {new Date().getFullYear()} LOGEET Inc. All rights reserved.</p>
-          </div>
+          <p className="text-[13px] text-white/50">&copy; {new Date().getFullYear()} LOGEET Inc. All rights reserved.</p>
         </div>
       </div>
     </footer>

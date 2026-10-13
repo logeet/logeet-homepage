@@ -1,86 +1,96 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 import { COMPANY } from "@/lib/company";
 import { Logo } from "./Logo";
 
 const NAV = [
-  { href: "#services", label: "서비스" },
-  { href: "#why", label: "왜 로지트인가" },
+  { href: "#services", label: "사업소개" },
+  { href: "#flow", label: "운영 프로세스" },
+  { href: "#data", label: "물류비 리포트" },
+  { href: "#os", label: "로지트 시스템" },
   { href: "#company", label: "회사소개" },
-  { href: "#contact", label: "문의하기" },
 ];
 
 export function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-ink/10 bg-paper/90 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+    <header className="on-dark sticky top-0 z-50 border-b border-white/10 bg-navy/85 text-white backdrop-blur-md">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-ink"
+      >
+        본문 바로가기
+      </a>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
         <a href="#top" aria-label="LOGEET 홈으로 이동">
-          <Logo />
+          <Logo className="text-white" />
         </a>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav aria-label="주 메뉴" className="hidden items-center gap-7 lg:flex">
           {NAV.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="font-sans text-sm font-medium text-steel transition-colors hover:text-ink"
+              className="text-[15px] font-semibold text-white/80 transition-colors duration-200 hover:text-white"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="flex items-center gap-1">
           <a
             href={COMPANY.portalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex items-center gap-1.5 rounded-xl bg-ink px-5 py-2.5 font-sans text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+            aria-label="고객사 로그인 (새 창)"
+            title="고객사 로그인"
+            className="flex size-11 items-center justify-center rounded-lg text-white/80 transition-colors duration-200 hover:bg-white/10 hover:text-white"
           >
-            고객사 로그인
-            <ArrowUpRight className="size-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <LogIn aria-hidden="true" className="size-5" />
           </a>
+          <a
+            href="#quote"
+            className="hidden min-h-10 items-center rounded-lg bg-blue px-4 text-sm font-bold text-white transition-colors duration-200 hover:bg-blue-strong sm:inline-flex"
+          >
+            견적 문의하기
+          </a>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="flex size-11 items-center justify-center rounded-lg lg:hidden"
+            aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+          >
+            {open ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="flex size-10 items-center justify-center md:hidden"
-          aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
-          aria-expanded={open}
-        >
-          {open ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
       </div>
 
       {open && (
-        <div className="border-t border-ink/10 bg-paper px-5 py-4 md:hidden">
-          <nav className="flex flex-col gap-1">
-            {NAV.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="rounded px-2 py-2.5 font-sans text-sm font-medium text-ink hover:bg-ink/5"
-              >
-                {item.label}
-              </a>
-            ))}
+        <nav id="mobile-nav" aria-label="모바일 메뉴" className="flex flex-col border-t border-white/10 px-5 py-2 lg:hidden">
+          {NAV.map((item) => (
             <a
-              href={COMPANY.portalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 flex items-center justify-between rounded-xl bg-ink px-4 py-2.5 font-sans text-sm font-bold text-white"
+              key={item.href}
+              href={item.href}
+              onClick={() => setOpen(false)}
+              className="border-b border-white/10 py-4 text-base font-semibold"
             >
-              고객사 로그인
-              <ArrowUpRight className="size-4" />
+              {item.label}
             </a>
-          </nav>
-        </div>
+          ))}
+          <a
+            href="#quote"
+            onClick={() => setOpen(false)}
+            className="my-3 flex min-h-12 items-center justify-center rounded-lg bg-blue text-base font-bold"
+          >
+            견적 문의하기
+          </a>
+        </nav>
       )}
     </header>
   );
