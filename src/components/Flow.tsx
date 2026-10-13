@@ -31,20 +31,21 @@ export function Flow() {
             return (
               <li
                 key={s.title}
-                className={`reveal relative rounded-2xl p-6 ${
+                className={`reveal relative grid grid-cols-[3rem_1fr] gap-x-4 rounded-2xl p-5 sm:block sm:p-6 ${
                   last ? "bg-blue text-white shadow-[0_20px_40px_-20px_rgba(37,99,235,0.7)]" : "bg-paper shadow-[0_8px_30px_-16px_rgba(15,23,42,0.18)]"
                 }`}
               >
-                <span className={`text-[13px] font-bold ${last ? "text-white/85" : "text-blue"}`}>STEP {i + 1}</span>
+                {/* 모바일: 아이콘 왼쪽 + 텍스트 오른쪽으로 짧게, sm 이상: 세로 카드 */}
+                <span className={`col-start-2 block text-[13px] font-bold ${last ? "text-white/85" : "text-blue"}`}>STEP {i + 1}</span>
                 <div
-                  className={`mt-4 flex size-12 items-center justify-center rounded-xl ${
+                  className={`col-start-1 row-span-3 row-start-1 flex size-12 items-center justify-center rounded-xl sm:mt-4 ${
                     last ? "bg-white/15" : "bg-blue-soft text-blue"
                   }`}
                 >
                   <s.icon aria-hidden="true" className="size-6" strokeWidth={1.8} />
                 </div>
-                <h3 className="mt-5 text-lg font-bold">{s.title}</h3>
-                <p className={`mt-1.5 text-[15px] leading-relaxed ${last ? "text-white/85" : "text-body"}`}>{s.desc}</p>
+                <h3 className="col-start-2 mt-0.5 text-lg font-bold sm:mt-5">{s.title}</h3>
+                <p className={`col-start-2 mt-1 text-[15px] leading-relaxed sm:mt-1.5 ${last ? "text-white/85" : "text-body"}`}>{s.desc}</p>
               </li>
             );
           })}

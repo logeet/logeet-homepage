@@ -27,7 +27,7 @@ export function ProductMockup() {
       <div className="px-4 pb-5 sm:px-5">
         <div className="mb-3 flex items-center justify-between gap-2">
           <p className="text-[12px] font-semibold text-body">월별 계획 대비 실적</p>
-          <p className="flex items-center gap-2.5 text-[10px] text-body">
+          <p className="flex items-center gap-2.5 text-[11px] text-body">
             <Legend className="bg-slate-200">계획</Legend>
             <Legend className="bg-blue">실적</Legend>
             <Legend className="bg-orange">초과</Legend>
@@ -46,7 +46,7 @@ export function ProductMockup() {
                   style={{ height: `${b.actual}%` }}
                 />
               </div>
-              <span className="text-[10px] font-medium text-sub">{b.month}</span>
+              <span className="text-[11px] font-medium text-sub">{b.month}</span>
             </div>
           ))}
         </div>
@@ -76,7 +76,7 @@ function MiniKpi({
   const color = tone === "accent" ? "text-blue" : tone === "ink" ? "text-ink" : "text-body";
   return (
     <div className="rounded-xl bg-gray px-3 py-2.5">
-      <p className="text-[10px] font-medium text-sub">{label}</p>
+      <p className="text-[11px] font-medium text-sub">{label}</p>
       <p className={`mt-0.5 text-base font-bold ${color} sm:text-lg`}>{value}</p>
     </div>
   );
