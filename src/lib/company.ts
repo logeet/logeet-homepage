@@ -10,5 +10,5 @@ export const COMPANY = {
   addressShort: "경기 용인시 기흥구 서천로201번길 31",
   phone: "010-5563-3440",
   email: "shkim@logeet.co.kr",
-  portalUrl: "https://ship.logeet.co.kr",
+  portalUrl: "https://center.logeet.co.kr/login",
 } as const;

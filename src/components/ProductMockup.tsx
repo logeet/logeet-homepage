@@ -7,7 +7,7 @@ const BARS = [
   { month: "6월", plan: 44, actual: 30, over: false },
 ];
 
-/** 실사진 대신 사용하는 비주얼 — 자체 개발 수배송관리 시스템(ship.logeet.co.kr) 화면을 단순화한 목업입니다. */
+/** 실사진 대신 사용하는 비주얼 — 자체 개발 수배송관리 시스템(center.logeet.co.kr) 화면을 단순화한 목업입니다. */
 export function ProductMockup() {
   return (
     <div className="w-full overflow-hidden bg-white">
@@ -16,7 +16,7 @@ export function ProductMockup() {
         <span className="size-2.5 rounded-full bg-slate-300" />
         <span className="size-2.5 rounded-full bg-slate-300" />
         <span className="ml-3 border border-line bg-white px-3.5 py-1 text-[11px] font-medium text-body">
-          ship.logeet.co.kr
+          center.logeet.co.kr
         </span>
       </div>
       <div className="grid grid-cols-3 gap-2.5 p-4 sm:gap-3 sm:p-5">

@@ -78,7 +78,7 @@ export function Services() {
               className={`group reveal relative flex min-h-64 flex-col justify-end overflow-hidden rounded-3xl bg-navy p-7 text-white ${i === SIDE.length - 1 ? "sm:col-span-2" : ""}`}
             >
               <Image src={s.photo} alt="" fill sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="object-cover transition-transform duration-500 group-hover:scale-105" />
-              <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,17,40,0.1),rgba(10,17,40,0.92)_75%)]" />
+              <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,17,40,0)_25%,rgba(10,17,40,0.6)_58%,rgba(10,17,40,0.92))]" />
               <div className="relative">
                 <s.icon aria-hidden="true" className="size-8" strokeWidth={1.8} />
                 <h3 className="mt-4 text-2xl font-bold">{s.title}</h3>
