@@ -18,7 +18,7 @@ export function Company() {
         <SectionTitle
           eyebrow="About LOGEET"
           title="회사소개"
-          desc="2025년 경기 용인 기흥에서 시작했습니다. 화주사가 궁금해하는 숫자를 숨기지 않는 것을 원칙으로 합니다."
+          desc="화주사가 궁금해하는 숫자를 숨기지 않는 것을 원칙으로 합니다."
         />
 
         <div className="mt-14 grid gap-4 lg:grid-cols-2">
