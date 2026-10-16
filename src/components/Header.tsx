@@ -25,7 +25,7 @@ export function Header() {
         본문 바로가기
       </a>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a href="#top" aria-label="LOGEET 홈으로 이동">
+        <a href="#top" aria-label="LOGEET 홈으로 이동" className="flex min-h-11 items-center">
           <Logo className="text-white" />
         </a>
 
