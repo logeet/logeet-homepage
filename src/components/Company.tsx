@@ -7,7 +7,6 @@ import { SectionTitle } from "./Services";
 const ROWS: [string, string][] = [
   ["상호", COMPANY.name],
   ["대표자", COMPANY.ceo],
-  ["설립일", COMPANY.founded],
   ["사업자등록번호", COMPANY.bizNo],
   ["업태 / 종목", `${COMPANY.industry} / ${COMPANY.businessType}`],
 ];

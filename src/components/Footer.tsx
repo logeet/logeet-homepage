@@ -5,7 +5,6 @@ const INFO: [string, string][] = [
   ["상호", COMPANY.name],
   ["대표", COMPANY.ceo],
   ["사업자등록번호", COMPANY.bizNo],
-  ["설립", COMPANY.founded],
   ["주소", COMPANY.address],
   ["TEL", COMPANY.phone],
   ["Email", COMPANY.email],
