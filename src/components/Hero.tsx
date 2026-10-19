@@ -1,14 +1,19 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { PHOTOS } from "@/lib/photos";
+import { HeroVideo } from "./HeroVideo";
+
+// Pexels 무료 라이선스 영상 6167566 (Erkan Avanoğlu, 상업 이용 가능·출처 표기 불필요), 540p 27초
+const HERO_VIDEO = "/videos/hero-conveyor.mp4";
 
 const BARS = [38, 52, 46, 70, 58, 64];
 
 export function Hero() {
   return (
     <section id="top" className="on-dark relative -mt-16 overflow-hidden bg-navy pt-16 text-white">
-      {/* 배경: 창고 사진 + 남색 오버레이 + 블루 글로우 */}
+      {/* 배경: 창고 사진 → (데스크톱) 컨베이어 영상 + 남색 오버레이 + 블루 글로우 */}
       <Image src={PHOTOS.hero} alt="" fill priority sizes="100vw" className="object-cover" />
+      <HeroVideo src={HERO_VIDEO} />
       <div aria-hidden="true" className="absolute inset-0 bg-navy/75" />
       <div
         aria-hidden="true"
