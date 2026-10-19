@@ -1,12 +1,12 @@
-import { PackageOpen, Boxes, ScanLine, Send, FileBarChart } from "lucide-react";
 import { SectionTitle } from "./Services";
+import { ProcessIllustration } from "./ProcessIllustration";
 
 const STEPS = [
-  { icon: PackageOpen, title: "입고 · 검수", desc: "수량·상태 확인 후 이상 건 즉시 공유" },
-  { icon: Boxes, title: "보관 · 재고", desc: "로케이션 단위 보관과 재고 정합성 관리" },
-  { icon: ScanLine, title: "피킹 · 패킹", desc: "주문대로 골라 담고 출고 기준대로 포장" },
-  { icon: Send, title: "출고 · 배송", desc: "임시차·간선운송과 택배로 전달" },
-  { icon: FileBarChart, title: "정산 · 리포트", desc: "계획 대비 실적을 항목별로 매월 보고" },
+  { title: "입고", desc: "하차한 상품의 수량·상태를 검수하고 이상 건은 바로 공유" },
+  { title: "보관", desc: "로케이션 단위로 보관하고 재고를 정확히 관리" },
+  { title: "피킹", desc: "주문대로 상품을 골라 담기" },
+  { title: "검수 · 패킹", desc: "스캔으로 한 번 더 확인하고 출고 기준대로 포장" },
+  { title: "출고", desc: "임시차·간선운송·택배로 출고, 비용은 매월 리포트로 보고" },
 ];
 
 export function Flow() {
@@ -25,30 +25,20 @@ export function Flow() {
           desc="여러 업체를 거치지 않으니, 책임도 비용도 한 곳에서 설명됩니다."
         />
 
-        <ol className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {STEPS.map((s, i) => {
-            const last = i === STEPS.length - 1;
-            return (
-              <li
-                key={s.title}
-                className={`reveal relative grid grid-cols-[3rem_1fr] gap-x-4 rounded-2xl p-5 sm:block sm:p-6 ${
-                  last ? "bg-blue text-white shadow-[0_20px_40px_-20px_rgba(37,99,235,0.7)]" : "bg-paper shadow-[0_8px_30px_-16px_rgba(15,23,42,0.18)]"
-                }`}
-              >
-                {/* 모바일: 아이콘 왼쪽 + 텍스트 오른쪽으로 짧게, sm 이상: 세로 카드 */}
-                <span className={`col-start-2 block text-[13px] font-bold ${last ? "text-white/85" : "text-blue"}`}>STEP {i + 1}</span>
-                <div
-                  className={`col-start-1 row-span-3 row-start-1 flex size-12 items-center justify-center rounded-xl sm:mt-4 ${
-                    last ? "bg-white/15" : "bg-blue-soft text-blue"
-                  }`}
-                >
-                  <s.icon aria-hidden="true" className="size-6" strokeWidth={1.8} />
-                </div>
-                <h3 className="col-start-2 mt-0.5 text-lg font-bold sm:mt-5">{s.title}</h3>
-                <p className={`col-start-2 mt-1 text-[15px] leading-relaxed sm:mt-1.5 ${last ? "text-white/85" : "text-body"}`}>{s.desc}</p>
-              </li>
-            );
-          })}
+        <div className="reveal mt-12 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:overflow-visible sm:px-0">
+          <ProcessIllustration />
+        </div>
+
+        <ol className="mt-10 grid gap-6 border-t border-ink/10 pt-8 sm:grid-cols-2 lg:grid-cols-5">
+          {STEPS.map((s, i) => (
+            <li key={s.title} className="reveal flex gap-3 lg:block">
+              <span className="text-sm font-bold tabular-nums text-blue">{String(i + 1).padStart(2, "0")}</span>
+              <div className="lg:mt-2">
+                <h3 className="text-base font-bold">{s.title}</h3>
+                <p className="mt-1 text-[15px] leading-relaxed text-body">{s.desc}</p>
+              </div>
+            </li>
+          ))}
         </ol>
       </div>
     </section>
