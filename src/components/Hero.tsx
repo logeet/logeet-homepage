@@ -8,70 +8,53 @@ import { HeroVideo } from "./HeroVideo";
 //       → 39053017 지게차 작업 → 6167566 컨베이어
 const HERO_VIDEO = "/videos/hero-montage.mp4";
 
-const BARS = [38, 52, 46, 70, 58, 64];
+// 실제 제공 중인 서비스·기능만 (고객사 시스템 코드로 확인)
+const POINTS = ["보관 · 운송 · 택배 통합 운영", "예산 대비 집행률 · 비용 리포트", "고객사 전용 관리 시스템"];
 
 export function Hero() {
   return (
     <section id="top" className="on-dark relative -mt-16 overflow-hidden bg-navy pt-16 text-white">
-      {/* 배경: 창고 사진 → (데스크톱) 컨베이어 영상 + 남색 오버레이 + 블루 글로우 */}
       <Image src={PHOTOS.hero} alt="" fill priority sizes="100vw" className="object-cover" />
       <HeroVideo src={HERO_VIDEO} />
       <div aria-hidden="true" className="absolute inset-0 bg-navy/75" />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(37,99,235,0.4),transparent_70%),linear-gradient(180deg,transparent_60%,rgba(10,17,40,0.9))]"
-      />
 
-      <div className="relative mx-auto flex min-h-[88svh] max-w-5xl flex-col items-center justify-center px-5 py-24 text-center">
-        {/* 유리 패널 — 자체 시스템을 상징하는 비주얼 */}
-        <div
-          aria-hidden="true"
-          className="float-y rise-in mb-10 w-full max-w-sm rounded-2xl border border-white/20 bg-white/10 p-5 text-left shadow-[0_20px_60px_-20px_rgba(37,99,235,0.6)] backdrop-blur-xl"
-        >
-          <div className="flex items-center justify-between text-[12px] font-semibold text-white/70">
-            <span>월별 계획 대비 실적</span>
-            <span className="rounded-full bg-white/15 px-2 py-0.5">LOGEET 리포트</span>
-          </div>
-          <div className="mt-4 flex h-16 items-end gap-2">
-            {BARS.map((h, i) => (
-              <span
-                key={i}
-                className={`flex-1 rounded-t ${i === 3 ? "bg-orange" : "bg-blue"}`}
-                style={{ height: `${h}%` }}
-              />
-            ))}
-          </div>
-        </div>
-
-        <span className="rise-in inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-[13px] font-semibold backdrop-blur">
-          <span className="size-1.5 rounded-full bg-orange" />
-          LOGEET FULFILLMENT
-        </span>
-        <h1 className="rise-in mt-6 text-balance text-[2rem] font-bold leading-[1.3] tracking-tight sm:text-6xl sm:leading-[1.2] [animation-delay:80ms]">
+      <div className="relative mx-auto flex min-h-[82svh] max-w-7xl flex-col justify-center px-5 py-24 sm:px-8">
+        <p className="rise-in text-sm font-semibold tracking-wide text-white/70">풀필먼트 · 통합 물류 대행</p>
+        <h1 className="rise-in mt-5 max-w-4xl text-[2.1rem] font-bold leading-[1.3] tracking-tight sm:text-5xl sm:leading-[1.25] lg:text-6xl lg:leading-[1.2] [animation-delay:60ms]">
           물류비가 보이는 풀필먼트,
           <br />
-          로지트가 숫자로 증명합니다
+          로지트가 숫자로 증명합니다.
         </h1>
-        <p className="rise-in mt-6 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg [animation-delay:160ms]">
-          창고보관 · 임시차 운송 · 택배 배송대행을 직접 운영하고{" "}
-          <br className="hidden sm:block" />
-          매달 계획 대비 실적을 리포트로 보여드립니다.
+        <p className="rise-in mt-6 max-w-2xl text-base leading-relaxed text-white/80 sm:text-lg lg:max-w-none lg:whitespace-nowrap [animation-delay:120ms]">
+          보관부터 운송, 택배까지. 통합 물류 운영과 투명한 비용 분석으로 기업의 물류를 더 체계적으로 관리합니다.
         </p>
-        <div className="rise-in mt-10 flex flex-wrap justify-center gap-3 [animation-delay:240ms]">
+        <div className="rise-in mt-10 flex flex-wrap gap-3 [animation-delay:180ms]">
           <a
-            href="#services"
-            className="inline-flex min-h-13 items-center gap-2 rounded-lg bg-blue px-7 text-base font-bold transition-colors duration-200 hover:bg-blue-strong"
+            href="#quote"
+            className="inline-flex min-h-12 items-center gap-2 rounded bg-blue px-6 text-[15px] font-bold transition-colors duration-200 hover:bg-blue-strong"
           >
-            더 알아보기
+            견적 문의하기
             <ArrowRight aria-hidden="true" className="size-4" />
           </a>
           <a
-            href="#quote"
-            className="inline-flex min-h-13 items-center rounded-lg border border-white/30 bg-white/5 px-7 text-base font-bold backdrop-blur transition-colors duration-200 hover:bg-white/15"
+            href="#services"
+            className="inline-flex min-h-12 items-center rounded border border-white/40 px-6 text-[15px] font-bold transition-colors duration-200 hover:bg-white/10"
           >
-            견적 문의하기
+            서비스 알아보기
           </a>
         </div>
+      </div>
+
+      {/* 핵심 차별점 — 히어로 하단 띠 */}
+      <div className="relative border-t border-white/15">
+        <ul className="mx-auto grid max-w-7xl gap-x-8 gap-y-3 px-5 py-5 text-sm font-medium text-white/85 sm:grid-cols-3 sm:px-8">
+          {POINTS.map((p, i) => (
+            <li key={p} className={`flex items-center gap-2.5 ${["", "sm:justify-center", "sm:justify-end"][i]}`}>
+              <span aria-hidden="true" className="size-1.5 shrink-0 bg-blue" />
+              {p}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

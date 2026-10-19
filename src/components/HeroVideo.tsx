@@ -56,7 +56,7 @@ export function HeroVideo({ src }: { src: string }) {
           type="button"
           onClick={toggle}
           aria-label={paused ? "배경 영상 재생" : "배경 영상 일시정지"}
-          className="absolute bottom-5 left-5 z-10 flex size-11 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur transition-colors duration-200 hover:bg-black/50"
+          className="absolute right-5 top-20 z-10 flex size-11 sm:right-8 items-center justify-center rounded-full border border-white/25 bg-black/30 text-white backdrop-blur transition-colors duration-200 hover:bg-black/50"
         >
           {paused ? <Play aria-hidden="true" className="size-4" /> : <Pause aria-hidden="true" className="size-4" />}
         </button>

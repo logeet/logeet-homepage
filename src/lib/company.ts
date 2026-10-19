@@ -10,4 +10,5 @@ export const COMPANY = {
   phone: "010-5563-3440",
   email: "shkim@logeet.co.kr",
   portalUrl: "https://center.logeet.co.kr/login",
+  siteUrl: "https://logeet-homepage.vercel.app", // 정식 도메인이 생기면 여기만 바꾸면 메타데이터·사이트맵이 따라간다
 } as const;

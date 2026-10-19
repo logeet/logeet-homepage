@@ -6,6 +6,4 @@ export const PHOTOS = {
   linehaul: "/photos/truck-orange.jpg", // 1786081061992-640cfd629fdc 주황색 트레일러 트럭
   parcel: "/photos/boxes.jpg", // 1766040923580-16ad32fae8b4 파란 테이프 택배 박스 더미
   system: "/photos/system.jpg", // 1586528116022-aeda1613c63d 창고 통로 작업자
-  base: "/photos/base.jpg", // 1689942010216-dc412bb1e7a9 팔레트가 가득한 창고
-  cta: "/photos/cta.jpg", // 1627309366653-2dedc084cdf1 박스로 가득 찬 선반
 };

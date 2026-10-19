@@ -1,23 +1,30 @@
 @import "tailwindcss";
 
-/* UI UX Pro Max — Logistics/Delivery 팔레트(트래킹 블루 + 배송 오렌지), Bento + Glass 히어로 */
+/*
+ * LOGEET 기업용 색상 체계 — 네이비 · 화이트 · 차콜 그레이 중심.
+ * blue는 버튼·링크·핵심 수치에만, orange는 '계획 초과' 같은 상태 표시에만 쓴다.
+ */
 :root {
-  --navy: #0a1128;
+  --navy: #0b1730;
+  --navy-2: #13244a;
   --ink: #111827;
+  --charcoal: #374151;
   --body: #4b5563;
   --sub: #6b7280;
   --paper: #ffffff;
-  --gray: #f4f7fc;
-  --line: #e5eaf3;
-  --blue: #2563eb;
-  --blue-strong: #1d4ed8;
-  --blue-soft: #eff6ff;
-  --orange: #ea580c;
+  --gray: #f5f7fa;
+  --line: #e5e7eb;
+  --blue: #1d4ed8;
+  --blue-strong: #1e40af;
+  --blue-soft: #eef3ff;
+  --orange: #c2410c;
 }
 
 @theme inline {
   --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
   --color-ink: var(--ink);
+  --color-charcoal: var(--charcoal);
   --color-body: var(--body);
   --color-sub: var(--sub);
   --color-paper: var(--paper);
@@ -59,7 +66,7 @@ body {
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -67,25 +74,16 @@ body {
   }
 }
 .rise-in {
-  animation: rise-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes float-y {
-  50% {
-    transform: translateY(-10px);
-  }
-}
-.float-y {
-  animation: float-y 6s ease-in-out infinite;
-}
-
-/* 스크롤 시 살짝 떠오르기 — 지원 브라우저에서만, 미지원/모션축소면 그냥 보임 */
+/* 스크롤 시 한 번만 살짝 떠오르기 — 지원 브라우저에서만, 미지원/모션축소면 그냥 보임 */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .reveal {
       animation: rise-in linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 20%;
+      animation-range: entry 0% cover 15%;
     }
   }
 }
@@ -93,9 +91,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  .float-y {
-    animation: none;
   }
   *,
   *::before,
