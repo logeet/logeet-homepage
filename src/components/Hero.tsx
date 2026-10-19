@@ -3,8 +3,10 @@ import { ArrowRight } from "lucide-react";
 import { PHOTOS } from "@/lib/photos";
 import { HeroVideo } from "./HeroVideo";
 
-// Pexels 무료 라이선스 영상 6167566 (Erkan Avanoğlu, 상업 이용 가능·출처 표기 불필요), 540p 27초
-const HERO_VIDEO = "/videos/hero-conveyor.mp4";
+// Pexels 무료 라이선스 영상 6개를 5초씩 이어붙인 27초 몽타주 (720p, 상업 이용 가능·출처 표기 불필요)
+// 순서: 4294436 팔레트랙 → 31751344 랙 통로 지게차 → 32386619 자동화 라인 → 10472351 트레이 분류
+//       → 39053017 지게차 작업 → 6167566 컨베이어
+const HERO_VIDEO = "/videos/hero-montage.mp4";
 
 const BARS = [38, 52, 46, 70, 58, 64];
 
