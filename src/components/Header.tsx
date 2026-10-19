@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { COMPANY } from "@/lib/company";
 import { Logo } from "./Logo";
@@ -16,9 +16,23 @@ const NAV = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // 첫 화면 위에서는 투명하게 영상과 이어지고, 스크롤하면 단색 네이비로 바뀐다.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  const solid = scrolled || open;
 
   return (
-    <header className="on-dark sticky top-0 z-50 border-b border-white/10 bg-navy text-white">
+    <header
+      className={`on-dark sticky top-0 z-50 border-b text-white transition-colors duration-300 ${
+        solid ? "border-white/10 bg-navy" : "border-transparent bg-transparent"
+      }`}
+    >
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-ink"

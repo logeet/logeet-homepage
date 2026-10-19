@@ -88,6 +88,38 @@ body {
   }
 }
 
+/* 차트 막대 등장 — 화면에 들어올 때 한 번만. 최종 값은 항상 실제 데이터 그대로 */
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+.grow-y {
+  transform-box: fill-box;
+  transform-origin: bottom;
+}
+.grow-x {
+  transform-origin: left;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .grow-y,
+    .grow-x {
+      animation: grow-y linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 35%;
+    }
+    .grow-x {
+      animation-name: grow-x;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

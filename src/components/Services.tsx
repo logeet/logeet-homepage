@@ -38,6 +38,7 @@ export function SectionTitle({
 const SERVICES = [
   {
     id: "fulfillment",
+    key: "입고부터 출고까지, 직접 운영",
     title: "풀필먼트",
     lead: "입고부터 출고까지 상품 흐름 전체를 직접 운영합니다.",
     photo: PHOTOS.fulfillment,
@@ -51,6 +52,7 @@ const SERVICES = [
   },
   {
     id: "transport",
+    key: "노선별 운송비까지 투명하게",
     title: "임시차 · 간선운송",
     lead: "매장과 물류센터를 잇는 운송을 운영하고 비용까지 관리합니다.",
     photo: PHOTOS.linehaul,
@@ -64,6 +66,7 @@ const SERVICES = [
   },
   {
     id: "parcel",
+    key: "B2B · B2C 비용을 나눠서",
     title: "택배 배송",
     lead: "B2B·B2C 택배 발송을 대행하고 채널별로 비용을 나눠 봅니다.",
     photo: PHOTOS.parcel,
@@ -73,6 +76,7 @@ const SERVICES = [
   },
   {
     id: "system",
+    key: "예산 대비 집행률을 한 화면에",
     title: "자체 관리 시스템",
     lead: "운영 현황과 비용을 고객사 전용 화면으로 제공합니다.",
     photo: PHOTOS.system,
@@ -88,7 +92,7 @@ const SERVICES = [
 
 export function Services() {
   return (
-    <section id="services" aria-labelledby="services-title" className="bg-gray py-20 sm:py-28">
+    <section id="services" aria-labelledby="services-title" className="bg-paper py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionTitle
           id="services-title"
@@ -98,68 +102,88 @@ export function Services() {
           oneLine
         />
 
-        <div className="mt-14 space-y-6">
-          {SERVICES.map((s, i) => (
-            <article
-              key={s.id}
-              id={s.id}
-              aria-labelledby={`${s.id}-title`}
-              className="reveal grid overflow-hidden rounded border border-line bg-paper lg:grid-cols-2"
-            >
-              <div className={`relative aspect-[16/10] lg:aspect-auto lg:min-h-[420px] ${i % 2 ? "lg:order-2" : ""}`}>
-                <Image src={s.photo} alt={s.alt} fill sizes="(min-width:1024px) 50vw, 100vw" className="object-cover" />
-              </div>
-
-              <div className="flex flex-col p-6 sm:p-10">
-                <p className="text-sm font-bold tabular-nums text-blue">{String(i + 1).padStart(2, "0")}</p>
-                <h3 id={`${s.id}-title`} className="mt-2 text-2xl font-bold tracking-tight sm:text-[1.75rem]">
-                  {s.title}
-                </h3>
-                <p className="mt-3 text-base leading-relaxed text-body">{s.lead}</p>
-
-                <p className="mt-6 text-[13px] font-bold text-sub">운영 프로세스</p>
-                <ol className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-2 text-sm font-medium text-charcoal">
-                  {s.steps.map((st, j) => (
-                    <li key={st} className="flex items-center gap-1.5">
-                      <span className="rounded bg-gray px-2.5 py-1">{st}</span>
-                      {j < s.steps.length - 1 && <span aria-hidden="true" className="text-sub">›</span>}
-                    </li>
-                  ))}
-                </ol>
-
-                <p className="mt-6 text-[13px] font-bold text-sub">주요 장점</p>
-                <ul className="mt-2 space-y-2">
-                  {s.benefits.map((b) => (
-                    <li key={b} className="flex gap-2.5 text-[15px] leading-relaxed">
-                      <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-blue" strokeWidth={2.5} />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 pt-2 lg:mt-auto">
-                  <a href="#quote" className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-bold text-blue hover:underline">
-                    {s.title} 견적 문의
-                    <ArrowRight aria-hidden="true" className="size-4" />
-                  </a>
-                  {s.id === "system" && (
-                    <a
-                      href={COMPANY.portalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex min-h-11 items-center gap-1 text-[15px] font-bold text-charcoal hover:underline"
-                    >
-                      고객사 시스템 바로가기
-                      <ArrowUpRight aria-hidden="true" className="size-4" />
-                      <span className="sr-only">(새 창)</span>
-                    </a>
-                  )}
+        <div className="mt-16 space-y-20 sm:space-y-28">
+          {SERVICES.map((s, i) => {
+            const flip = i % 2 === 1;
+            return (
+              <article
+                key={s.id}
+                id={s.id}
+                aria-labelledby={`${s.id}-title`}
+                className="reveal group grid scroll-mt-24 items-center gap-8 lg:grid-cols-12 lg:gap-14"
+              >
+                {/* 대형 이미지 — 호버 시 미세 확대 */}
+                <div className={`relative aspect-[4/3] overflow-hidden rounded bg-gray lg:col-span-7 ${flip ? "lg:order-2" : ""}`}>
+                  <Image
+                    src={s.photo}
+                    alt={s.alt}
+                    fill
+                    sizes="(min-width:1024px) 58vw, 100vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  />
+                  <span className="absolute left-4 top-4 rounded bg-navy/85 px-2.5 py-1 text-[12px] font-bold tabular-nums text-white">
+                    {String(i + 1).padStart(2, "0")} / {String(SERVICES.length).padStart(2, "0")}
+                  </span>
                 </div>
-              </div>
-            </article>
-          ))}
+
+                <div className="lg:col-span-5">
+                  <h3 id={`${s.id}-title`} className="text-[1.75rem] font-bold tracking-tight sm:text-[2.1rem]">
+                    {s.title}
+                  </h3>
+                  <p className="mt-3 text-base leading-relaxed text-body">{s.lead}</p>
+
+                  {/* 서비스마다 다른 핵심 문구 */}
+                  <p className="mt-6 border-l-2 border-blue pl-4 text-lg font-bold leading-snug text-navy sm:text-xl">{s.key}</p>
+
+                  {/* 운영 프로세스 — 선형 그래픽 */}
+                  <ol aria-label={`${s.title} 운영 프로세스`} className="mt-7 flex flex-wrap items-center gap-y-3 text-[13px] font-semibold text-charcoal">
+                    {s.steps.map((st, j) => (
+                      <li key={st} className="flex items-center">
+                        <span className="flex items-center gap-1.5">
+                          <span aria-hidden="true" className={`size-2 rounded-full ${j === s.steps.length - 1 ? "bg-blue" : "bg-navy/30"}`} />
+                          {st}
+                        </span>
+                        {j < s.steps.length - 1 && <span aria-hidden="true" className="mx-2.5 h-px w-5 bg-line sm:w-7" />}
+                      </li>
+                    ))}
+                  </ol>
+
+                  <ul className="mt-7 space-y-2.5 border-t border-line pt-6">
+                    {s.benefits.map((b) => (
+                      <li key={b} className="flex gap-2.5 text-[15px] leading-relaxed">
+                        <Check aria-hidden="true" className="mt-1 size-4 shrink-0 text-blue" strokeWidth={2.5} />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                    <a
+                      href="#quote"
+                      className="group/cta inline-flex min-h-11 items-center gap-2 rounded bg-navy px-5 text-[15px] font-bold text-white transition-colors duration-200 hover:bg-blue"
+                    >
+                      {s.title} 견적 문의
+                      <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover/cta:translate-x-1" />
+                    </a>
+                    {s.id === "system" && (
+                      <a
+                        href={COMPANY.portalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-11 items-center gap-1 text-[15px] font-bold text-charcoal hover:text-blue"
+                      >
+                        고객사 시스템 바로가기
+                        <ArrowUpRight aria-hidden="true" className="size-4" />
+                        <span className="sr-only">(새 창)</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
-        <p className="mt-4 text-[13px] text-sub">서비스 이미지는 이해를 돕기 위한 참고 이미지이며 실제 로지트 시설과 다를 수 있습니다.</p>
+        <p className="mt-16 text-[13px] text-sub">서비스 이미지는 이해를 돕기 위한 참고 이미지이며 실제 로지트 시설과 다를 수 있습니다.</p>
       </div>
     </section>
   );

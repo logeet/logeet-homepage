@@ -156,20 +156,66 @@ export function OsTabs() {
 
   return (
     <section id="os" aria-labelledby="os-title" className="on-dark bg-navy py-20 text-white sm:py-28">
-      <div className="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-        <div className="reveal">
-          <p className="text-sm font-bold tracking-wide text-sky-300">System</p>
-          <h2 id="os-title" className="mt-3 text-[1.75rem] font-bold leading-snug tracking-tight sm:text-4xl sm:leading-tight">
-            직접 개발한 관리 시스템으로
-            <br />
-            운영과 비용을 함께 봅니다
-          </h2>
-          <p className="mt-4 max-w-md text-base leading-relaxed text-white/75 sm:text-lg">
-            고객사는 전용 계정으로 접속해 물류 운영 현황과 비용을 직접 확인합니다.
-          </p>
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        {/* 제품 소개 머리말 */}
+        <div className="reveal flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-sm font-bold tracking-wide text-sky-300">LOGEET System</p>
+            <h2 id="os-title" className="mt-3 text-[1.75rem] font-bold leading-snug tracking-tight sm:text-4xl sm:leading-tight">
+              직접 개발한 관리 시스템으로 운영과 비용을 함께 봅니다
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-white/75 sm:text-lg">
+              고객사는 전용 계정으로 접속해 물류 운영 현황과 비용을 직접 확인합니다.
+            </p>
+          </div>
+          <a
+            href={COMPANY.portalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-h-13 shrink-0 items-center gap-2 self-start rounded bg-white px-6 text-[15px] font-bold text-navy transition-colors duration-200 hover:bg-sky-100 lg:self-auto"
+          >
+            고객사 시스템 바로가기
+            <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            <span className="sr-only">(새 창)</span>
+          </a>
+        </div>
 
-          <h3 className="mt-8 text-[13px] font-bold text-white/60">현재 제공 중인 기능</h3>
-          <ul className="mt-3 space-y-2.5">
+        {/* 쇼케이스 — 왼쪽 기능 목록, 오른쪽 큰 화면 */}
+        <div className="mt-12 grid gap-6 lg:grid-cols-[340px_1fr] lg:gap-10">
+          <div role="group" aria-label="시스템 화면 선택" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:content-start">
+            {TABS.map((t, i) => {
+              const on = i === active;
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  aria-pressed={on}
+                  aria-controls="os-panel"
+                  onClick={() => setActive(i)}
+                  className={`group rounded border-l-2 px-5 py-4 text-left transition-colors duration-200 ${
+                    on ? "border-sky-300 bg-white/10" : "border-white/15 hover:bg-white/5"
+                  }`}
+                >
+                  <span className="text-[12px] font-bold tabular-nums text-sky-300">{String(i + 1).padStart(2, "0")}</span>
+                  <span className={`mt-1 block text-[17px] font-bold ${on ? "text-white" : "text-white/80"}`}>{t.title}</span>
+                  <span className={`mt-1 block text-[14px] leading-relaxed ${on ? "text-white/75" : "text-white/55"}`}>{t.desc}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div id="os-panel" aria-live="polite" className="min-w-0 lg:min-h-[440px]">
+            <div key={tab.key} className="rise-in overflow-hidden rounded-lg shadow-[0_40px_80px_-40px_rgba(0,0,0,0.7)]">
+              <tab.View />
+            </div>
+            <p className="mt-3 text-[12px] text-white/55">실제 시스템 화면 구성을 단순화한 예시이며, 수치는 예시 데이터입니다.</p>
+          </div>
+        </div>
+
+        {/* 실제 제공 기능 */}
+        <div className="reveal mt-14 border-t border-white/10 pt-10">
+          <h3 className="text-[13px] font-bold text-white/60">현재 제공 중인 기능</h3>
+          <ul className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.filter((f) => f.status === "live").map((f) => (
               <li key={f.name} className="flex gap-2.5 text-[15px] leading-relaxed text-white/90">
                 <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sky-300" />
@@ -179,53 +225,14 @@ export function OsTabs() {
           </ul>
           {FEATURES.some((f) => f.status === "planned") && (
             <>
-              <h3 className="mt-6 text-[13px] font-bold text-white/60">개발 예정</h3>
-              <ul className="mt-3 space-y-2 text-[15px] text-white/60">
+              <h3 className="mt-8 text-[13px] font-bold text-white/60">개발 예정</h3>
+              <ul className="mt-3 grid gap-2 text-[15px] text-white/60 sm:grid-cols-2 lg:grid-cols-3">
                 {FEATURES.filter((f) => f.status === "planned").map((f) => (
                   <li key={f.name}>{f.name}</li>
                 ))}
               </ul>
             </>
           )}
-
-          <a
-            href={COMPANY.portalUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex min-h-12 items-center gap-2 rounded border border-white/40 px-6 font-bold transition-colors duration-200 hover:bg-white/10"
-          >
-            고객사 시스템 바로가기
-            <ArrowUpRight aria-hidden="true" className="size-4" />
-            <span className="sr-only">(새 창)</span>
-          </a>
-        </div>
-
-        <div className="reveal">
-          <div role="group" aria-label="시스템 영역 선택" className="flex flex-wrap gap-2">
-            {TABS.map((t, i) => (
-              <button
-                key={t.key}
-                type="button"
-                aria-pressed={i === active}
-                aria-controls="os-panel"
-                onClick={() => setActive(i)}
-                className={`min-h-11 rounded px-4 text-[15px] font-bold transition-colors duration-200 ${
-                  i === active ? "bg-blue text-white" : "bg-white/10 text-white/80 hover:bg-white/20"
-                }`}
-              >
-                {t.key}
-              </button>
-            ))}
-          </div>
-
-          <div id="os-panel" aria-live="polite" className="mt-6 lg:min-h-[460px]">
-            <h3 className="text-xl font-bold sm:text-2xl">{tab.title}</h3>
-            <p className="mt-1.5 text-[15px] leading-relaxed text-white/75">{tab.desc}</p>
-            <div key={tab.key} className="rise-in mt-5 overflow-hidden rounded">
-              <tab.View />
-            </div>
-            <p className="mt-3 text-[12px] text-white/55">실제 시스템 화면 구성을 단순화한 예시이며, 수치는 예시 데이터입니다.</p>
-          </div>
         </div>
       </div>
     </section>

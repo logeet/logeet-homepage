@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { COMPANY } from "@/lib/company";
 import { TRUST } from "@/lib/trust";
 import { SectionTitle } from "./Services";
@@ -67,6 +68,20 @@ export function Company() {
           title="물류를 직접 운영하고, 숫자를 숨기지 않습니다"
           desc="로지트는 보관·운송·택배를 직접 운영하는 통합 물류 회사입니다. 운영 데이터를 고객사와 공유하고 비용을 항목별로 보고하는 것을 원칙으로 합니다."
         />
+
+        {/* 실제 현장 사진 — trust.ts 의 photos 에 입력된 경우에만 표시 */}
+        {TRUST.photos.length > 0 && (
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {TRUST.photos.map((ph) => (
+              <li key={ph.src} className="reveal">
+                <div className="relative aspect-[4/3] overflow-hidden rounded bg-paper">
+                  <Image src={ph.src} alt={ph.caption} fill sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw" className="object-cover" />
+                </div>
+                <p className="mt-2 text-[14px] text-body">{ph.caption}</p>
+              </li>
+            ))}
+          </ul>
+        )}
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
           <div className="space-y-6">
