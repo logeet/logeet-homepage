@@ -18,7 +18,7 @@ export function Flow() {
           id="flow-title"
           eyebrow="Process"
           title="입고부터 비용 리포트까지, 하나의 흐름으로 운영합니다"
-          desc="여러 업체를 거치지 않으니 책임도 비용도 한 곳에서 설명됩니다."
+          desc="창구가 하나이니 책임도 비용도 한 곳에서 설명됩니다."
         />
 
         <div className="reveal mt-12 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:overflow-visible sm:px-0">

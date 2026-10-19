@@ -6,7 +6,7 @@ import { SectionTitle } from "./Services";
 const AREAS = ["창고보관 · 풀필먼트", "임시차 · 간선운송", "택배 배송대행 (B2B · B2C)", "물류 관리 시스템 운영"];
 
 const PRINCIPLES = [
-  { title: "직접 운영", desc: "보관, 운송, 택배를 로지트가 직접 관리합니다." },
+  { title: "단일 창구", desc: "보관, 운송, 택배를 로지트가 한 창구에서 관리합니다." },
   { title: "데이터 공유", desc: "운영 현황과 비용을 고객사 전용 화면으로 공유합니다." },
   { title: "정기 보고", desc: "매월 계획 대비 실적과 항목별 비용을 보고합니다." },
 ];
@@ -65,8 +65,8 @@ export function Company() {
         <SectionTitle
           id="company-title"
           eyebrow="About LOGEET"
-          title="물류를 직접 운영하고, 숫자를 숨기지 않습니다"
-          desc="로지트는 보관·운송·택배를 직접 운영하는 통합 물류 회사입니다. 운영 데이터를 고객사와 공유하고 비용을 항목별로 보고하는 것을 원칙으로 합니다."
+          title="물류를 한 창구에서 책임지고, 숫자를 숨기지 않습니다"
+          desc="로지트는 보관·운송·택배를 한 창구에서 관리하는 통합 물류 회사입니다. 운영 데이터를 고객사와 공유하고 비용을 항목별로 보고하는 것을 원칙으로 합니다."
         />
 
         {/* 실제 현장 사진 — trust.ts 의 photos 에 입력된 경우에만 표시 */}
@@ -84,26 +84,26 @@ export function Company() {
         )}
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
-          <div className="space-y-6">
-            <div className="reveal rounded border border-line bg-paper p-6">
-              <h3 className="text-base font-bold">사업 영역</h3>
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          <div className="space-y-10">
+            <div className="reveal border-t-2 border-navy pt-6">
+              <h3 className="text-[13px] font-bold tracking-wide text-sub">사업 영역</h3>
+              <ul className="mt-4 grid gap-x-6 sm:grid-cols-2">
                 {AREAS.map((a) => (
-                  <li key={a} className="rounded bg-gray px-3 py-2.5 text-[15px] font-medium">
+                  <li key={a} className="border-b border-line py-3 text-base font-semibold">
                     {a}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="reveal rounded border border-line bg-paper p-6">
-              <h3 className="text-base font-bold">운영 방식</h3>
+            <div className="reveal border-t-2 border-navy pt-6">
+              <h3 className="text-[13px] font-bold tracking-wide text-sub">운영 방식</h3>
               <ol className="mt-4 space-y-4">
                 {PRINCIPLES.map((p, i) => (
-                  <li key={p.title} className="flex gap-3">
-                    <span className="text-sm font-bold tabular-nums text-blue">{String(i + 1).padStart(2, "0")}</span>
+                  <li key={p.title} className="flex gap-4">
+                    <span className="pt-0.5 text-sm font-bold tabular-nums text-blue">{String(i + 1).padStart(2, "0")}</span>
                     <p className="text-[15px] leading-relaxed">
-                      <span className="font-bold">{p.title}</span>
-                      <span className="ml-2 text-body">{p.desc}</span>
+                      <span className="block text-base font-bold">{p.title}</span>
+                      <span className="text-body">{p.desc}</span>
                     </p>
                   </li>
                 ))}

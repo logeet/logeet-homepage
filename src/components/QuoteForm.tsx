@@ -9,15 +9,15 @@ const NEEDS = ["풀필먼트 (보관 · 입출고)", "임시차 · 간선운송"
 
 type Field = "company" | "name" | "phone" | "email" | "consent";
 type Errors = Partial<Record<Field, string>>;
-type Status = "idle" | "opening" | "opened" | "copied" | "copy-failed";
+type Status = "idle" | "sending" | "sent" | "error" | "opening" | "opened" | "copied" | "copy-failed";
 
 const input =
   "mt-2 block w-full rounded border border-line bg-white px-4 py-3 text-base text-ink placeholder:text-sub focus:border-blue aria-[invalid=true]:border-orange";
 const labelCls = "text-sm font-bold text-ink";
 
 /*
- * ponytail: 서버 없이 방문자의 메일 앱으로 넘기는 방식. 자동 접수가 필요하면
- * Route Handler + 메일 발송 API(Resend 등, API 키 필요)로 교체한다.
+ * 접수 순서: /api/quote(회사 Zoho 메일로 담당자 알림) → 서버 메일 설정이 없으면(503)
+ * 방문자의 메일 앱으로 넘긴다. 서버가 성공을 돌려줄 때만 '접수 완료'라고 안내한다.
  */
 function compose(f: FormData) {
   const line = (k: string) => String(f.get(k) ?? "").trim() || "-";
@@ -65,20 +65,47 @@ export function QuoteForm() {
 
   const invalid = (k: Field) => (errors[k] ? { "aria-invalid": true, "aria-describedby": `${k}-error` } : {});
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const openMail = (f: FormData) => {
+    setStatus("opening");
+    window.location.href = compose(f).href;
+    setTimeout(() => setStatus("opened"), 900);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const f = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const f = new FormData(form);
     const errs = validate(f);
     setErrors(errs);
     const first = Object.keys(errs)[0];
     if (first) {
-      (e.currentTarget.elements.namedItem(first) as HTMLElement | null)?.focus();
+      (form.elements.namedItem(first) as HTMLElement | null)?.focus();
       setStatus("idle");
       return;
     }
-    setStatus("opening");
-    window.location.href = compose(f).href;
-    setTimeout(() => setStatus("opened"), 900);
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...Object.fromEntries(f),
+          needs: f.getAll("needs"),
+          consent: Boolean(f.get("consent")),
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; reason?: string };
+      if (res.ok && data.ok) {
+        setStatus("sent");
+        form.reset();
+      } else if (data.reason === "not_configured") {
+        openMail(f); // 서버 메일 미설정 — 메일 앱 방식으로 전환
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
   };
 
   const onCopy = async () => {
@@ -94,6 +121,9 @@ export function QuoteForm() {
 
   const message: Record<Status, string> = {
     idle: "",
+    sending: "보내는 중입니다…",
+    sent: "견적 문의가 접수되었습니다. 담당자가 확인 후 연락드립니다.",
+    error: `전송하지 못했습니다. 잠시 후 다시 시도하시거나 ${COMPANY.phone} 또는 ${COMPANY.email} 로 연락 주세요. ‘문의 내용 복사’로 내용을 옮길 수 있습니다.`,
     opening: "메일 앱을 여는 중입니다…",
     opened: `메일 작성 창이 열렸다면 메일 앱에서 ‘보내기’를 눌러야 접수됩니다. 창이 열리지 않았다면 ‘문의 내용 복사’ 후 ${COMPANY.email} 로 보내 주세요.`,
     copied: `문의 내용을 복사했습니다. ${COMPANY.email} 로 붙여 넣어 보내 주세요.`,
@@ -141,11 +171,15 @@ export function QuoteForm() {
         <div className="mx-auto max-w-3xl px-5 sm:px-8">
           <h3 className="text-xl font-bold sm:text-2xl">견적 문의</h3>
           <p className="mt-2 text-[15px] leading-relaxed text-body">
-            <span className="text-orange">*</span> 표시는 필수 항목입니다. ‘메일로 견적 문의 보내기’를 누르면 입력하신 내용이
-            담긴 메일 작성 창이 열리며, 메일 앱에서 보내기를 눌러야 접수됩니다.
+            <span className="text-orange">*</span> 표시는 필수 항목입니다. 보내기를 누르면 담당자에게 바로 전달되며, 온라인 접수가
+            어려운 경우에는 입력하신 내용이 담긴 메일 작성 창이 열립니다.
           </p>
 
-          <form ref={formRef} noValidate onSubmit={onSubmit} className="mt-8 rounded border border-line bg-paper p-6 sm:p-8">
+          <form ref={formRef} noValidate onSubmit={onSubmit} className="relative mt-8 rounded border border-line bg-paper p-6 sm:p-8">
+            {/* 스팸 방지용 숨은 칸 — 사람에게는 보이지 않음 */}
+            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <input name="website" tabIndex={-1} autoComplete="off" />
+            </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <label className={labelCls}>
                 회사명 <span className="text-orange">*</span>
@@ -242,11 +276,11 @@ export function QuoteForm() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <button
                 type="submit"
-                disabled={status === "opening"}
+                disabled={status === "sending" || status === "opening"}
                 className="flex min-h-13 flex-1 items-center justify-center gap-2 rounded bg-blue px-6 text-base font-bold text-white transition-colors duration-200 hover:bg-blue-strong disabled:opacity-60"
               >
                 <Mail aria-hidden="true" className="size-5" />
-                메일로 견적 문의 보내기
+                {status === "sending" ? "보내는 중…" : "견적 문의 보내기"}
               </button>
               <button
                 type="button"
@@ -257,7 +291,13 @@ export function QuoteForm() {
                 문의 내용 복사
               </button>
             </div>
-            <p role="status" aria-live="polite" className="mt-4 min-h-6 text-sm leading-relaxed text-charcoal">
+            <p
+              role="status"
+              aria-live="polite"
+              className={`mt-4 min-h-6 text-sm leading-relaxed ${
+                status === "sent" ? "font-bold text-blue" : status === "error" ? "font-semibold text-orange" : "text-charcoal"
+              }`}
+            >
               {status === "copied" || status === "copy-failed"
                 ? message[status]
                 : Object.keys(errors).length > 0

@@ -98,7 +98,7 @@ export function Services() {
           id="services-title"
           eyebrow="Services"
           title="보관부터 운송, 택배까지 한 곳에서 운영합니다"
-          desc="여러 업체에 나눠 맡기면 비용도 책임도 흩어집니다. 로지트는 물류 전 구간을 직접 운영하고 비용을 한 화면으로 정리합니다."
+          desc="여러 업체에 나눠 맡기면 비용도 책임도 흩어집니다. 로지트는 물류 전 구간을 한 창구에서 관리하고 비용을 한 화면으로 정리합니다."
           oneLine
         />
 

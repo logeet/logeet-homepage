@@ -34,14 +34,15 @@ export function Values() {
           eyebrow="Why LOGEET"
           title="물류를 운영하는 것에서 끝나지 않고, 숫자로 설명합니다"
         />
-        <ul className="mt-12 grid gap-px overflow-hidden rounded border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {VALUES.map((v) => (
-            <li
-              key={v.title}
-              className="reveal bg-paper p-6 sm:p-8"
-            >
-              <v.icon aria-hidden="true" className="size-7 text-blue" strokeWidth={1.6} />
-              <h3 className="mt-5 text-lg font-bold">{v.title}</h3>
+        {/* 박스 대신 상단 굵은 선 + 번호로 나누는 편집형 4열 */}
+        <ul className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+          {VALUES.map((v, i) => (
+            <li key={v.title} className={`reveal border-t-2 pt-6 ${i === 0 ? "border-blue" : "border-navy"}`}>
+              <div className="flex items-center justify-between">
+                <span className="text-[13px] font-bold tabular-nums text-sub">{String(i + 1).padStart(2, "0")}</span>
+                <v.icon aria-hidden="true" className="size-6 text-blue" strokeWidth={1.6} />
+              </div>
+              <h3 className="mt-6 text-xl font-bold tracking-tight">{v.title}</h3>
               <p className="mt-2 text-[15px] leading-relaxed text-body">{v.desc}</p>
             </li>
           ))}
