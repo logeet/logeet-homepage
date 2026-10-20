@@ -3,7 +3,7 @@
 export const PHOTOS = {
   hero: "/photos/hero.jpg", // 1553413077-190dd305871c 대형 창고 통로
   fulfillment: "/photos/fulfillment.jpg", // 1587293852726-70cdb56c2866 랙에 쌓인 박스
-  linehaul: "/photos/truck-orange.jpg", // 1786081061992-640cfd629fdc 주황색 트레일러 트럭
+  linehaul: "/photos/linehaul.jpg", // 1601467995997-ac1ae9a8fff4 흰색 탑차 + LOGEET 로고·블루 띠 합성 (실제 차량 아님)
   parcel: "/photos/boxes.jpg", // 1766040923580-16ad32fae8b4 파란 테이프 택배 박스 더미
-  system: "/photos/system.jpg", // 1586528116022-aeda1613c63d 창고 통로 작업자
+  system: "/photos/system-dashboard.jpg", // 1526628953301-3e589a6a8b74 데이터 대시보드 화면
 };

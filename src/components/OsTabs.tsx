@@ -8,7 +8,7 @@ import { ProductMockup } from "./ProductMockup";
 /** 시스템 화면을 단순화한 창 틀 (주소창 + 본문) */
 function Window({ children }: { children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden rounded bg-white text-ink">
+    <div className="overflow-hidden bg-white text-ink">
       <div className="flex items-center gap-2 border-b border-line bg-gray px-5 py-3">
         <span className="size-2.5 rounded-full bg-slate-300" />
         <span className="size-2.5 rounded-full bg-slate-300" />
@@ -18,7 +18,7 @@ function Window({ children }: { children: React.ReactNode }) {
         </span>
         <span className="ml-auto text-[12px] font-semibold text-sub">예시 데이터</span>
       </div>
-      <div className="p-5 sm:p-6">{children}</div>
+      <div className="p-6 sm:p-9">{children}</div>
     </div>
   );
 }
@@ -46,7 +46,7 @@ function StorageView() {
       </div>
       <div className="mt-4 grid grid-cols-8 gap-1.5">
         {cells.map((c, i) => (
-          <span key={i} className={`h-7 rounded ${CELL[c]}`} />
+          <span key={i} className={`h-8 rounded-sm sm:h-11 ${CELL[c]}`} />
         ))}
       </div>
       <div className="mt-4 flex gap-4 text-[12px] text-body">
@@ -73,7 +73,7 @@ function RouteView() {
       <p className="text-sm font-semibold text-body">노선별 임시차 누적 비용</p>
       <ul className="mt-4 divide-y divide-line">
         {ROUTES.map((r) => (
-          <li key={r.name} className="flex items-center gap-3 py-3.5">
+          <li key={r.name} className="flex items-center gap-3 py-4 sm:py-5">
             <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-soft text-blue">
               <Truck aria-hidden="true" className="size-4" />
             </span>
@@ -155,16 +155,19 @@ export function OsTabs() {
   const tab = TABS[active];
 
   return (
-    <section id="os" aria-labelledby="os-title" className="on-dark bg-navy py-20 text-white sm:py-28">
+    <section id="os" aria-labelledby="os-title" className="on-dark border-t border-white/5 bg-navy-deep py-24 text-white sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* 제품 소개 머리말 */}
         <div className="reveal flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm font-bold tracking-wide text-sky-300">LOGEET System</p>
-            <h2 id="os-title" className="mt-3 text-[1.75rem] font-bold leading-snug tracking-tight sm:text-4xl sm:leading-tight">
+            <p className="flex items-center gap-3 text-[13px] font-bold uppercase tracking-[0.14em] text-sky-300">
+              <span aria-hidden="true" className="h-px w-6 bg-sky-300" />
+              LOGEET System
+            </p>
+            <h2 id="os-title" className="mt-4 text-balance text-[1.75rem] font-bold leading-[1.3] tracking-[-0.02em] sm:text-4xl sm:leading-[1.25] lg:text-[2.6rem] lg:leading-[1.22]">
               직접 개발한 관리 시스템으로 운영과 비용을 함께 봅니다
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-white/75 sm:text-lg">
+            <p className="mt-5 text-base leading-[1.75] text-white/70 sm:text-lg">
               고객사는 전용 계정으로 접속해 물류 운영 현황과 비용을 직접 확인합니다.
             </p>
           </div>
@@ -172,7 +175,7 @@ export function OsTabs() {
             href={COMPANY.portalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex min-h-13 shrink-0 items-center gap-2 self-start rounded bg-white px-6 text-[15px] font-bold text-navy transition-colors duration-200 hover:bg-sky-100 lg:self-auto"
+            className="group inline-flex min-h-13 shrink-0 items-center gap-2 self-start rounded-sm bg-white px-6 text-[15px] font-bold text-navy transition-colors duration-200 hover:bg-sky-100 lg:self-auto"
           >
             고객사 시스템 바로가기
             <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -181,8 +184,9 @@ export function OsTabs() {
         </div>
 
         {/* 쇼케이스 — 왼쪽 기능 목록, 오른쪽 큰 화면 */}
-        <div className="mt-12 grid gap-6 lg:grid-cols-[340px_1fr] lg:gap-10">
-          <div role="group" aria-label="시스템 화면 선택" className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:content-start">
+        <div className="mt-14 grid gap-6 lg:mt-16 lg:grid-cols-[300px_1fr] lg:gap-12">
+          {/* 활성: 흰 카드 / 비활성: 테두리만 */}
+          <div role="group" aria-label="시스템 화면 선택" className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-1 lg:content-start">
             {TABS.map((t, i) => {
               const on = i === active;
               return (
@@ -192,29 +196,34 @@ export function OsTabs() {
                   aria-pressed={on}
                   aria-controls="os-panel"
                   onClick={() => setActive(i)}
-                  className={`group rounded border-l-2 px-5 py-4 text-left transition-colors duration-200 ${
-                    on ? "border-sky-300 bg-white/10" : "border-white/15 hover:bg-white/5"
+                  className={`group rounded-md border px-5 py-4 text-left transition-colors duration-200 ${
+                    on ? "border-white bg-white text-navy shadow-[0_16px_32px_-16px_rgba(0,0,0,0.6)]" : "border-white/10 hover:border-white/25 hover:bg-white/[0.03]"
                   }`}
                 >
-                  <span className="text-[12px] font-bold tabular-nums text-sky-300">{String(i + 1).padStart(2, "0")}</span>
-                  <span className={`mt-1 block text-[17px] font-bold ${on ? "text-white" : "text-white/80"}`}>{t.title}</span>
-                  <span className={`mt-1 block text-[14px] leading-relaxed ${on ? "text-white/75" : "text-white/55"}`}>{t.desc}</span>
+                  <span className={`text-[12px] font-bold tabular-nums tracking-[0.12em] ${on ? "text-blue" : "text-sky-300/70"}`}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className={`mt-1 block text-[17px] font-bold ${on ? "text-navy" : "text-white/80"}`}>{t.title}</span>
+                  <span className={`mt-1 block text-[14px] leading-relaxed ${on ? "text-body" : "text-white/50"}`}>{t.desc}</span>
                 </button>
               );
             })}
           </div>
 
-          <div id="os-panel" aria-live="polite" className="min-w-0 lg:min-h-[440px]">
-            <div key={tab.key} className="rise-in overflow-hidden rounded-lg shadow-[0_40px_80px_-40px_rgba(0,0,0,0.7)]">
-              <tab.View />
+          {/* 제품 화면 — 얇은 바깥 틀 안에 크게 */}
+          <div id="os-panel" aria-live="polite" className="flex min-w-0 flex-col">
+            <div className="flex-1 rounded-xl bg-white/[0.04] p-1.5 ring-1 ring-white/10 sm:p-2.5">
+              <div key={tab.key} className="rise-in h-full overflow-hidden rounded-lg bg-white shadow-product">
+                <tab.View />
+              </div>
             </div>
-            <p className="mt-3 text-[12px] text-white/55">실제 시스템 화면 구성을 단순화한 예시이며, 수치는 예시 데이터입니다.</p>
+            <p className="mt-4 text-[12px] text-white/50">실제 시스템 화면 구성을 단순화한 예시이며, 수치는 예시 데이터입니다.</p>
           </div>
         </div>
 
         {/* 실제 제공 기능 */}
-        <div className="reveal mt-14 border-t border-white/10 pt-10">
-          <h3 className="text-[13px] font-bold text-white/60">현재 제공 중인 기능</h3>
+        <div className="reveal mt-16 border-t border-white/10 pt-10">
+          <h3 className="text-[12px] font-bold uppercase tracking-[0.12em] text-white/50">현재 제공 중인 기능</h3>
           <ul className="mt-4 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURES.filter((f) => f.status === "live").map((f) => (
               <li key={f.name} className="flex gap-2.5 text-[15px] leading-relaxed text-white/90">

@@ -3,7 +3,7 @@ import { COMPANY } from "@/lib/company";
 import { TRUST } from "@/lib/trust";
 import { SectionTitle } from "./Services";
 
-const AREAS = ["창고보관 · 풀필먼트", "임시차 · 간선운송", "택배 배송대행 (B2B · B2C)", "물류 관리 시스템 운영"];
+const AREAS = ["창고보관 · 풀필먼트", "임시차 · 지입차 · 간선운송", "택배 배송대행 (B2B · B2C)", "물류 관리 시스템 운영"];
 
 const PRINCIPLES = [
   { title: "단일 창구", desc: "보관, 운송, 택배를 로지트가 한 창구에서 관리합니다." },
@@ -60,13 +60,14 @@ export function Company() {
   const hasTrust = blocks.some((b) => b.items.length > 0);
 
   return (
-    <section id="company" aria-labelledby="company-title" className="bg-gray py-20 sm:py-28">
+    <section id="company" aria-labelledby="company-title" className="bg-paper py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionTitle
           id="company-title"
           eyebrow="About LOGEET"
           title="물류를 한 창구에서 책임지고, 숫자를 숨기지 않습니다"
           desc="로지트는 보관·운송·택배를 한 창구에서 관리하는 통합 물류 회사입니다. 운영 데이터를 고객사와 공유하고 비용을 항목별로 보고하는 것을 원칙으로 합니다."
+          split
         />
 
         {/* 실제 현장 사진 — trust.ts 의 photos 에 입력된 경우에만 표시 */}
@@ -83,11 +84,11 @@ export function Company() {
           </ul>
         )}
 
-        <div className="mt-12 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
-          <div className="space-y-10">
+        <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-16">
+          <div className="space-y-12 lg:col-span-5">
             <div className="reveal border-t-2 border-navy pt-6">
               <h3 className="text-[13px] font-bold tracking-wide text-sub">사업 영역</h3>
-              <ul className="mt-4 grid gap-x-6 sm:grid-cols-2">
+              <ul className="mt-4 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-1">
                 {AREAS.map((a) => (
                   <li key={a} className="border-b border-line py-3 text-base font-semibold">
                     {a}
@@ -111,13 +112,13 @@ export function Company() {
             </div>
           </div>
 
-          <div className="reveal rounded border border-line bg-paper p-6">
-            <h3 className="text-base font-bold">기업 정보</h3>
-            <dl className="mt-3 divide-y divide-line">
+          <div className="reveal border-t-2 border-navy pt-6 lg:col-span-7">
+            <h3 className="text-[13px] font-bold tracking-wide text-sub">기업 정보</h3>
+            <dl className="mt-2 divide-y divide-line border-b border-line">
               {INFO.map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-4 py-3.5 text-[15px] sm:grid-cols-[8rem_1fr]">
-                  <dt className="text-sub">{k}</dt>
-                  <dd>{v}</dd>
+                <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-4 py-4 text-[15px] sm:grid-cols-[9rem_1fr]">
+                  <dt className="font-medium text-sub">{k}</dt>
+                  <dd className="text-ink">{v}</dd>
                 </div>
               ))}
             </dl>

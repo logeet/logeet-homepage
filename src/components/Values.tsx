@@ -27,12 +27,13 @@ const VALUES = [
 
 export function Values() {
   return (
-    <section aria-labelledby="values-title" className="border-b border-line bg-paper py-20 sm:py-28">
+    <section aria-labelledby="values-title" className="border-b border-line bg-paper pt-24 pb-20 sm:pt-32 sm:pb-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionTitle
           id="values-title"
           eyebrow="Why LOGEET"
           title="물류를 운영하는 것에서 끝나지 않고, 숫자로 설명합니다"
+          oneLine
         />
         {/* 박스 대신 상단 굵은 선 + 번호로 나누는 편집형 4열 */}
         <ul className="mt-12 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">

@@ -21,36 +21,38 @@ export function Hero() {
       <Image src={PHOTOS.hero} alt="" fill priority sizes="100vw" className="object-cover" />
       <HeroVideo src={HERO_VIDEO} />
       {/* 왼쪽(글자)은 진하게, 오른쪽(현장)은 옅게 — 글자와 영상이 경쟁하지 않도록 */}
+      {/* 왼쪽(글자) 쪽을 진하게, 위(헤더)·아래(지표 띠)도 살짝 눌러 글자 대비 확보 */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,23,48,0.94)_0%,rgba(11,23,48,0.82)_45%,rgba(11,23,48,0.45)_100%)]"
+        className="absolute inset-0 bg-[linear-gradient(90deg,rgba(11,23,48,0.95)_0%,rgba(11,23,48,0.86)_38%,rgba(11,23,48,0.5)_72%,rgba(11,23,48,0.38)_100%)]"
       />
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-navy to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-navy/70 to-transparent" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-navy via-navy/70 to-transparent" />
 
-      <div className="relative mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-center px-5 pt-32 pb-16 sm:px-8">
-        <p className="rise-in flex items-center gap-3 text-sm font-semibold tracking-[0.12em] text-sky-300">
-          <span aria-hidden="true" className="h-px w-8 bg-sky-300" />
+      <div className="relative mx-auto flex min-h-[max(640px,calc(100svh-6.5rem))] max-w-7xl flex-col justify-center px-5 pt-32 pb-16 sm:px-8 lg:pb-20">
+        <p className="rise-in flex items-center gap-3 text-[13px] font-bold tracking-[0.2em] text-sky-300">
+          <span aria-hidden="true" className="h-px w-10 bg-sky-300/80" />
           FULFILLMENT · LOGISTICS
         </p>
-        <h1 className="rise-in mt-6 text-[2.35rem] font-bold leading-[1.18] tracking-[-0.02em] sm:text-6xl sm:leading-[1.12] lg:text-[4.6rem] lg:leading-[1.08] [animation-delay:60ms]">
+        <h1 className="rise-in mt-7 text-[2.35rem] font-bold leading-[1.2] tracking-[-0.025em] sm:text-6xl sm:leading-[1.12] lg:text-[4.5rem] lg:leading-[1.1] [animation-delay:60ms]">
           물류비가 보이는 풀필먼트,
           <br />
-          <span className="text-white/95">로지트가 숫자로 증명합니다.</span>
+          <span className="text-white/90">로지트가 숫자로 증명합니다.</span>
         </h1>
-        <p className="rise-in mt-7 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg lg:max-w-none lg:whitespace-nowrap [animation-delay:120ms]">
+        <p className="rise-in mt-8 max-w-2xl text-base leading-[1.75] text-white/70 sm:text-lg lg:mt-9 lg:max-w-none lg:whitespace-nowrap lg:text-[19px] [animation-delay:120ms]">
           보관부터 운송, 택배까지. 통합 물류 운영과 투명한 비용 분석으로 기업의 물류를 더 체계적으로 관리합니다.
         </p>
-        <div className="rise-in mt-10 flex flex-wrap gap-3 [animation-delay:180ms]">
+        <div className="rise-in mt-10 flex flex-col gap-3 sm:flex-row lg:mt-12 [animation-delay:180ms]">
           <a
             href="#quote"
-            className="group inline-flex min-h-13 items-center gap-2 rounded bg-blue px-7 text-[15px] font-bold transition-colors duration-200 hover:bg-blue-strong"
+            className="group inline-flex min-h-14 items-center justify-center gap-2.5 rounded-sm bg-blue px-8 text-base font-bold shadow-[0_12px_32px_-12px_rgba(29,78,216,0.8)] transition-colors duration-200 hover:bg-blue-strong"
           >
             견적 문의하기
             <ArrowRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
           </a>
           <a
             href="#services"
-            className="inline-flex min-h-13 items-center rounded border border-white/35 px-7 text-[15px] font-bold transition-colors duration-200 hover:border-white hover:bg-white/10"
+            className="inline-flex min-h-14 items-center justify-center rounded-sm border border-white/30 px-8 text-base font-bold text-white/90 transition-colors duration-200 hover:border-white/70 hover:bg-white/[0.06] hover:text-white"
           >
             서비스 알아보기
           </a>
@@ -58,15 +60,15 @@ export function Hero() {
       </div>
 
       {/* 핵심 가치 — 지표형 라벨 (왼쪽 · 가운데 · 오른쪽 정렬) */}
-      <div className="relative border-t border-white/15">
-        <ul className="mx-auto grid max-w-7xl gap-y-4 px-5 py-6 sm:grid-cols-3 sm:px-8">
+      <div className="relative border-t border-white/12 bg-navy/40">
+        <ul className="mx-auto grid max-w-7xl gap-y-5 px-5 py-7 sm:grid-cols-3 sm:px-8">
           {POINTS.map((p, i) => (
             <li key={p.k} className={`flex ${["", "sm:justify-center", "sm:justify-end"][i]}`}>
-              <div className="flex items-baseline gap-3">
-                <span className="text-[13px] font-bold tabular-nums text-sky-300">0{i + 1}</span>
+              <div className="flex items-start gap-4">
+                <span className="pt-0.5 text-[12px] font-bold tabular-nums tracking-[0.12em] text-sky-300">0{i + 1}</span>
                 <div>
-                  <p className="text-[15px] font-bold">{p.k}</p>
-                  <p className="text-[13px] text-white/65">{p.v}</p>
+                  <p className="text-base font-bold">{p.k}</p>
+                  <p className="mt-0.5 text-[13px] text-white/60">{p.v}</p>
                 </div>
               </div>
             </li>

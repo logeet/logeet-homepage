@@ -6,19 +6,20 @@ const STEPS = [
   { icon: PackageCheck, title: "입고 · 검수", desc: "하차한 상품의 수량과 상태를 확인하고 이상 건은 바로 공유합니다." },
   { icon: Warehouse, title: "보관 · 재고 관리", desc: "로케이션 단위로 보관하고 적재율과 재고를 관리합니다." },
   { icon: ScanBarcode, title: "주문 · 출고 처리", desc: "주문에 맞춰 피킹·검수·패킹 후 출고합니다." },
-  { icon: Truck, title: "운송 · 배송", desc: "임시차·간선운송과 택배(B2B·B2C)로 전달합니다." },
+  { icon: Truck, title: "운송 · 배송", desc: "임시차·지입차·간선운송과 택배(B2B·B2C)로 전달합니다." },
   { icon: FileBarChart, title: "실적 · 비용 리포트", desc: "예산 대비 집행률과 항목별 비용을 매월 보고합니다." },
 ];
 
 export function Flow() {
   return (
-    <section id="flow" aria-labelledby="flow-title" className="border-y border-line bg-gray py-20 sm:py-28">
+    <section id="flow" aria-labelledby="flow-title" className="border-y border-line bg-gray py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionTitle
           id="flow-title"
           eyebrow="Process"
           title="입고부터 비용 리포트까지, 하나의 흐름으로 운영합니다"
           desc="창구가 하나이니 책임도 비용도 한 곳에서 설명됩니다."
+          split
         />
 
         <div className="reveal mt-12 -mx-5 overflow-x-auto px-5 sm:mx-0 sm:overflow-visible sm:px-0">
