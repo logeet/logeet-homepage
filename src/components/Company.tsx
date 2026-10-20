@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { COMPANY } from "@/lib/company";
 import { TRUST } from "@/lib/trust";
 import { SectionTitle } from "./Services";
 import { AREA_ILLUSTRATIONS, PRINCIPLE_ILLUSTRATIONS } from "./AboutIllustrations";
@@ -17,27 +16,6 @@ const PRINCIPLES = [
   { title: "데이터 공유", desc: "운영 현황과 비용을 고객사 전용 화면으로 공유합니다." },
   { title: "정기 보고", desc: "매월 계획 대비 실적과 항목별 비용을 보고합니다." },
   { title: "월마감", desc: "매월 운영 실적과 비용을 확정해 마감합니다." },
-];
-
-const INFO: [string, React.ReactNode][] = [
-  ["상호", COMPANY.name],
-  ["대표자", COMPANY.ceo],
-  ["사업자등록번호", COMPANY.bizNo],
-  ["업태 / 종목", `${COMPANY.industry} / ${COMPANY.businessType}`],
-  ["본사 소재지", COMPANY.address],
-  ["물류센터", COMPANY.centerAddress],
-  [
-    "대표 전화",
-    <a key="tel" href={`tel:${COMPANY.phone}`} className="-my-2.5 inline-block py-2.5 font-semibold text-blue hover:underline">
-      {COMPANY.phone}
-    </a>,
-  ],
-  [
-    "이메일",
-    <a key="mail" href={`mailto:${COMPANY.email}`} className="-my-2.5 inline-block py-2.5 font-semibold break-all text-blue hover:underline">
-      {COMPANY.email}
-    </a>,
-  ],
 ];
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -169,22 +147,7 @@ export function Company() {
           </div>
         )}
       </div>
-
-      {/* 기업 정보 — 옅은 회색 띠로 분리, 카드·그림자 없이 정보 표만 */}
-      <div className="border-t border-line bg-gray">
-        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
-          <Block title="기업 정보">
-            <dl className="border-t border-line-strong/70">
-              {INFO.map(([k, v]) => (
-                <div key={k} className="grid gap-1 border-b border-line py-4 text-[15px] sm:grid-cols-[10rem_1fr] sm:gap-6">
-                  <dt className="font-medium text-sub">{k}</dt>
-                  <dd className="min-w-0 text-ink">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </Block>
-        </div>
-      </div>
+      {/* 기업 정보(상호·대표·사업자번호·업태·주소·연락처)는 푸터와 겹쳐 푸터 한 곳에만 둔다 */}
     </section>
   );
 }

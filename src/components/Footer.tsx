@@ -1,14 +1,27 @@
 import { COMPANY } from "@/lib/company";
 import { Logo } from "./Logo";
 
-const INFO: [string, string][] = [
+// 기업 정보는 여기 한 곳에만 둔다 (회사 소개 섹션과 중복 제거). 두 칸씩 짝지어 배치.
+const link = "-my-1.5 inline-block py-1.5 transition-colors duration-200 hover:text-white hover:underline";
+const INFO: [string, React.ReactNode][] = [
   ["상호", COMPANY.name],
   ["대표", COMPANY.ceo],
   ["사업자등록번호", COMPANY.bizNo],
-  ["TEL", COMPANY.phone],
+  ["업태 / 종목", `${COMPANY.industry} / ${COMPANY.businessType}`],
   ["본사", COMPANY.address],
   ["물류센터", COMPANY.centerAddress],
-  ["Email", COMPANY.email],
+  [
+    "TEL",
+    <a key="tel" href={`tel:${COMPANY.phone}`} className={link}>
+      {COMPANY.phone}
+    </a>,
+  ],
+  [
+    "Email",
+    <a key="mail" href={`mailto:${COMPANY.email}`} className={`${link} break-all`}>
+      {COMPANY.email}
+    </a>,
+  ],
 ];
 
 const LINKS = [

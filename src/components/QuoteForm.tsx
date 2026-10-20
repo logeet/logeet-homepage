@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { ArrowRight, ChevronDown, Copy, Mail, Phone } from "lucide-react";
 import { COMPANY } from "@/lib/company";
+import { KakaoIcon } from "./FloatingCta";
 
 const VOLUMES = ["월 1천 건 미만", "월 1천 ~ 5천 건", "월 5천 ~ 2만 건", "월 2만 건 이상", "잘 모르겠음"];
 const NEEDS = ["풀필먼트 (보관 · 입출고)", "임시차 · 지입차 · 간선운송", "택배 (B2B · B2C)", "관리 시스템 · 물류비 리포트"];
@@ -172,6 +173,20 @@ export function QuoteForm() {
                   {COMPANY.email}
                 </a>
               </li>
+              {COMPANY.kakaoChatUrl && (
+                <li>
+                  <a
+                    href={COMPANY.kakaoChatUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex min-h-14 items-center gap-3 text-[15px] font-semibold text-white/85 hover:text-white"
+                  >
+                    <KakaoIcon className="size-4 text-[#FEE500]" />
+                    카카오톡 상담
+                    <span className="sr-only">(새 창)</span>
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
         </div>
