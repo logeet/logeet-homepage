@@ -386,11 +386,11 @@ function InsightView() {
 }
 
 const TABS = [
-  { key: "운영 현황", title: "센터 운영 현황", desc: "적재율과 재고, 박스 출고 추이를 한 화면에서 봅니다.", View: StorageView },
-  { key: "운송", title: "임시차 · 운송 비용", desc: "노선별 임시차 비용을 고정계약과 구분해 누적합니다.", View: RouteView },
-  { key: "택배", title: "택배 B2B · B2C", desc: "택배 출고를 채널별로 나눠 물량과 비중을 봅니다.", View: ParcelView },
-  { key: "리포트", title: "예산 대비 실적", desc: "계획 대비 실적과 집행률을 매달 정리합니다.", View: ProductMockup },
-  { key: "인사이트", title: "분석 인사이트", desc: "물동량·적재율·비용 변화를 문장으로 요약해 알려줍니다.", View: InsightView },
+  { key: "운영 현황", title: "센터 운영 현황", desc: "적재율·재고·출고 추이를 봅니다.", View: StorageView },
+  { key: "운송", title: "임시차 · 운송 비용", desc: "노선별 비용을 임시차·고정계약으로 나눠 봅니다.", View: RouteView },
+  { key: "택배", title: "택배 B2B · B2C", desc: "채널별 물량과 비용을 봅니다.", View: ParcelView },
+  { key: "리포트", title: "예산 대비 실적", desc: "월별 계획 대비 실적과 집행률을 봅니다.", View: ProductMockup },
+  { key: "인사이트", title: "분석 인사이트", desc: "주요 변화를 문장으로 요약해 알려줍니다.", View: InsightView },
 ];
 
 // 고객사 시스템 코드로 확인한 '제공 중' 기능. 개발 예정 기능은 status: "planned"로 추가하면 따로 표시된다.
@@ -419,10 +419,10 @@ export function OsTabs() {
               LOGEET System
             </p>
             <h2 id="os-title" className="mt-4 text-balance text-[1.75rem] font-bold leading-[1.3] tracking-[-0.02em] sm:text-4xl sm:leading-[1.25] lg:text-[2.6rem] lg:leading-[1.22]">
-              직접 개발한 관리 시스템으로 운영과 비용을 함께 봅니다
+              직접 개발한 시스템으로 운영과 비용을 한눈에 봅니다
             </h2>
             <p className="mt-5 text-base leading-[1.75] text-white/70 sm:text-lg">
-              고객사는 전용 계정으로 접속해 물류 운영 현황과 비용을 직접 확인합니다.
+              고객사는 전용 계정으로 직접 확인합니다.
             </p>
           </div>
           <a

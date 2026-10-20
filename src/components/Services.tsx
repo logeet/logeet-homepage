@@ -57,7 +57,7 @@ const SERVICES = [
     id: "fulfillment",
     key: "입고부터 출고까지, 직접 운영",
     title: "풀필먼트",
-    lead: "입고부터 출고까지 상품 흐름 전체를 직접 운영합니다.",
+    lead: "보관·재고·출고를 센터에서 직접 처리합니다.",
     photo: PHOTOS.fulfillment,
     alt: "랙에 박스가 적재된 물류센터 내부 (참고 이미지)",
     steps: ["입고", "검수", "보관", "피킹", "패킹", "출고"],
@@ -71,7 +71,7 @@ const SERVICES = [
     id: "transport",
     key: "노선별 운송비까지 투명하게",
     title: "임시차 · 지입차 · 간선운송",
-    lead: "매장과 물류센터를 잇는 운송을 운영하고 비용까지 관리합니다.",
+    lead: "센터와 매장을 잇는 운송을 운영합니다.",
     photo: PHOTOS.linehaul,
     alt: "LOGEET 로고가 들어간 흰색 화물 탑차 (로고를 합성한 참고 이미지)",
     steps: ["운송 계획", "차량 배정", "운송", "비용 집계"],
@@ -83,9 +83,9 @@ const SERVICES = [
   },
   {
     id: "parcel",
-    key: "B2B · B2C 비용을 나눠서",
+    key: "채널별 택배비를 따로 집계",
     title: "택배 배송",
-    lead: "B2B·B2C 택배 발송을 대행하고 채널별로 비용을 나눠 봅니다.",
+    lead: "B2B·B2C 택배 발송을 대행합니다.",
     photo: PHOTOS.parcel,
     alt: "테이프로 포장된 택배 박스 (참고 이미지)",
     steps: ["출고", "택배 접수", "배송", "B2B·B2C 비용 집계"],
@@ -217,8 +217,8 @@ export function Services() {
         <SectionTitle
           id="services-title"
           eyebrow="Services"
-          title="보관부터 운송, 택배까지 한 곳에서 운영합니다"
-          desc="여러 업체에 나눠 맡기면 비용도 책임도 흩어집니다. 로지트는 물류 전 구간을 한 곳에서 관리하고 비용을 한 화면으로 정리합니다."
+          title="보관부터 배송까지, 한 곳에서 운영합니다"
+          desc="여러 업체에 나눠 맡기면 비용도 책임도 흩어집니다. 로지트는 전 구간을 하나로 관리합니다."
           oneLine
         />
 

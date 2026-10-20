@@ -41,7 +41,7 @@ export function Hero() {
           <span className="text-white/90">로지트가 숫자로 증명합니다.</span>
         </h1>
         <p className="rise-in mt-8 max-w-2xl text-base leading-[1.75] text-white/70 sm:text-lg lg:mt-9 lg:max-w-none lg:whitespace-nowrap lg:text-[19px] [animation-delay:120ms]">
-          보관부터 운송, 택배까지. 통합 물류 운영과 투명한 비용 분석으로 기업의 물류를 더 체계적으로 관리합니다.
+          보관·운송·택배를 하나로 운영하고, 물류비를 항목별로 투명하게 보고합니다.
         </p>
         <div className="rise-in mt-10 flex flex-col gap-3 sm:flex-row lg:mt-12 [animation-delay:180ms]">
           <a

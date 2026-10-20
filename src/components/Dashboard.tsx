@@ -169,9 +169,9 @@ export function Dashboard() {
           id="dashboard-title"
           tone="dark"
           eyebrow="Cost Visibility"
-          title="정산서 한 장이 아닌, 항목별 숫자로 보고합니다"
-          desc="고객사 전용 화면에서 예산 대비 집행률, 운송 유형별 비용, B2B·B2C 택배비를 매달 확인할 수 있습니다. 아래는 실제 화면 구성을 단순화한 데모입니다."
-          split
+          title="정산서가 아닌, 항목별 숫자로 보고합니다"
+          desc="예산 대비 집행률부터 운송 유형별 비용, B2B·B2C 택배비까지 매달 한 화면에서 확인합니다."
+          oneLine
         />
 
         {/* 업무용 앱 창 */}

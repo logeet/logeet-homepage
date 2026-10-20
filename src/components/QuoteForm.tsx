@@ -148,10 +148,10 @@ export function QuoteForm() {
               id="quote-title"
               className="mt-4 text-balance text-[1.75rem] font-bold leading-[1.3] tracking-[-0.02em] sm:text-4xl sm:leading-[1.25] lg:text-[2.6rem] lg:leading-[1.22]"
             >
-              귀사의 물류 운영, 더 체계적으로 관리할 수 있습니다.
+              귀사의 물류, 로지트가 체계적으로 관리합니다.
             </h2>
             <p className="mt-5 text-base leading-[1.75] text-white/70 sm:text-lg">
-              필요한 물류 서비스와 운영 조건을 알려주시면 검토 후 안내해 드립니다.
+              운영 조건을 알려주시면 검토 후 연락드립니다.
             </p>
             <a
               href="#quote-form"
@@ -196,8 +196,7 @@ export function QuoteForm() {
           <div className="rounded-lg bg-paper p-6 text-ink shadow-[0_40px_80px_-32px_rgba(0,0,0,0.6)] sm:p-10">
             <h3 className="text-xl font-bold tracking-tight sm:text-2xl">견적 문의</h3>
             <p className="mt-2 text-[14px] leading-relaxed text-body">
-              <span className="text-orange">*</span> 표시는 필수 항목입니다. 보내기를 누르면 담당자에게 바로 전달되며, 온라인 접수가
-              어려운 경우에는 입력하신 내용이 담긴 메일 작성 창이 열립니다.
+              <span className="text-orange">*</span> 표시는 필수 항목입니다. 온라인 접수가 어려우면 메일 작성 창이 열립니다.
             </p>
 
             <form ref={formRef} noValidate onSubmit={onSubmit} className="relative mt-8 border-t border-line pt-8">
@@ -291,7 +290,7 @@ export function QuoteForm() {
                 </label>
                 <Err id="consent-error" msg={errors.consent} />
                 <details className="group pl-7 text-[13px] leading-relaxed text-body">
-                  <summary className="inline-flex min-h-8 cursor-pointer list-none items-center gap-1 font-semibold text-charcoal underline-offset-2 hover:underline [&::-webkit-details-marker]:hidden">
+                  <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1 font-semibold text-charcoal underline-offset-2 hover:underline [&::-webkit-details-marker]:hidden">
                     내용 보기
                     <ChevronDown aria-hidden="true" className="size-3.5 transition-transform duration-200 group-open:rotate-180" />
                   </summary>

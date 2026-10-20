@@ -2,7 +2,7 @@ import { COMPANY } from "@/lib/company";
 import { Logo } from "./Logo";
 
 // 기업 정보는 여기 한 곳에만 둔다 (회사 소개 섹션과 중복 제거). 두 칸씩 짝지어 배치.
-const link = "-my-1.5 inline-block py-1.5 transition-colors duration-200 hover:text-white hover:underline";
+const link = "-my-2.5 inline-block py-2.5 transition-colors duration-200 hover:text-white hover:underline";
 const INFO: [string, React.ReactNode][] = [
   ["상호", COMPANY.name],
   ["대표", COMPANY.ceo],
