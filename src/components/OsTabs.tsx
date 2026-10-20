@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Truck, CheckCircle2 } from "lucide-react";
 import { COMPANY } from "@/lib/company";
 import { ProductMockup } from "./ProductMockup";
@@ -404,12 +404,48 @@ const FEATURES: { name: string; status: "live" | "planned" }[] = [
   { name: "분석 인사이트 (물동량 · 적재율 · 비용 변화 자동 요약)", status: "live" }, // 고객사 시스템 화면으로 확인
 ];
 
+const AUTO_MS = 6000; // 자동 넘김 간격
+
+// '움직임 줄이기' 설정 — 서버에선 false로 두고 브라우저에서 실제 값을 읽는다(하이드레이션 안전)
+const REDUCE = "(prefers-reduced-motion: reduce)";
+const subscribeReduce = (cb: () => void) => {
+  const m = window.matchMedia(REDUCE);
+  m.addEventListener("change", cb);
+  return () => m.removeEventListener("change", cb);
+};
+
 export function OsTabs() {
   const [active, setActive] = useState(0);
+  const [auto, setAuto] = useState(true); // 탭을 직접 누르면 false — 자동 넘김 끝
+  const [inView, setInView] = useState(false); // 섹션이 화면에 보일 때만 넘김
+  const reduced = useSyncExternalStore(subscribeReduce, () => window.matchMedia(REDUCE).matches, () => false);
+  const sectionRef = useRef<HTMLElement>(null);
   const tab = TABS[active];
+  const running = auto && inView && !reduced;
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    // 섹션이 화면 가운데 띠(위아래 30% 제외)에 걸치면 '보임' — 섹션이 화면보다 길어도(모바일) 동작
+    const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting), { rootMargin: "-30% 0px -30% 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // 탭이 바뀔 때마다 타이머를 새로 걸어 진행 표시와 맞춘다
+  useEffect(() => {
+    if (!running) return;
+    const t = setTimeout(() => setActive((a) => (a + 1) % TABS.length), AUTO_MS);
+    return () => clearTimeout(t);
+  }, [running, active]);
+
+  const pick = (i: number) => {
+    setAuto(false);
+    setActive(i);
+  };
 
   return (
-    <section id="os" aria-labelledby="os-title" className="on-dark border-t border-white/5 bg-navy-deep py-24 text-white sm:py-32">
+    <section ref={sectionRef} id="os" aria-labelledby="os-title" className="on-dark border-t border-white/5 bg-navy-deep py-24 text-white sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* 제품 소개 머리말 */}
         <div className="reveal flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
@@ -449,8 +485,8 @@ export function OsTabs() {
                   type="button"
                   aria-pressed={on}
                   aria-controls="os-panel"
-                  onClick={() => setActive(i)}
-                  className={`group rounded-md border px-5 py-4 text-left transition-colors duration-200 ${
+                  onClick={() => pick(i)}
+                  className={`group relative overflow-hidden rounded-md border px-5 py-4 text-left transition-colors duration-200 ${
                     on ? "border-white bg-white text-navy shadow-[0_16px_32px_-16px_rgba(0,0,0,0.6)]" : "border-white/10 hover:border-white/25 hover:bg-white/[0.03]"
                   }`}
                 >
@@ -459,13 +495,23 @@ export function OsTabs() {
                   </span>
                   <span className={`mt-1 block text-[17px] font-bold ${on ? "text-navy" : "text-white/80"}`}>{t.title}</span>
                   <span className={`mt-1 block text-[14px] leading-relaxed ${on ? "text-body" : "text-white/50"}`}>{t.desc}</span>
+                  {/* 자동 넘김 진행 표시 — 다음 탭으로 넘어갈 때까지 차오름 */}
+                  {on && running && (
+                    <span
+                      key={active}
+                      aria-hidden="true"
+                      className="absolute inset-x-0 bottom-0 h-0.5 origin-left bg-blue"
+                      style={{ animation: `tab-progress ${AUTO_MS}ms linear both` }}
+                    />
+                  )}
                 </button>
               );
             })}
           </div>
 
           {/* 제품 화면 — 얇은 바깥 틀 안에 크게 */}
-          <div id="os-panel" aria-live="polite" className="flex min-w-0 flex-col">
+          {/* 자동으로 넘어가는 동안엔 화면 읽기 프로그램이 매번 읽지 않도록 */}
+          <div id="os-panel" aria-live={running ? "off" : "polite"} className="flex min-w-0 flex-col">
             <div className="flex-1 rounded-xl bg-white/[0.04] p-1.5 ring-1 ring-white/10 sm:p-2.5 lg:min-h-[660px]">
               <div key={tab.key} className="rise-in h-full overflow-hidden rounded-lg bg-white shadow-product">
                 <tab.View />

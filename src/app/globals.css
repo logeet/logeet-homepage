@@ -74,6 +74,16 @@ body {
   outline-color: var(--blue);
 }
 
+/* 시스템 탭 자동 넘김 진행 표시 */
+@keyframes tab-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @keyframes rise-in {
   from {
     opacity: 0;
