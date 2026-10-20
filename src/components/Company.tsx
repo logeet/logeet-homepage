@@ -25,17 +25,29 @@ const INFO: [string, React.ReactNode][] = [
   ],
   [
     "이메일",
-    <a key="mail" href={`mailto:${COMPANY.email}`} className="-my-2.5 inline-block py-2.5 font-semibold text-blue hover:underline">
+    <a key="mail" href={`mailto:${COMPANY.email}`} className="-my-2.5 inline-block py-2.5 font-semibold break-all text-blue hover:underline">
       {COMPANY.email}
     </a>,
   ],
 ];
 
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** 블록마다 같은 틀 — 넓은 화면에서 왼쪽 3칸은 항목명, 오른쪽 9칸은 내용 */
+function Block({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`reveal grid gap-6 lg:grid-cols-12 lg:gap-8 ${className}`}>
+      <h3 className="text-lg font-bold tracking-tight text-navy lg:col-span-3">{title}</h3>
+      <div className="lg:col-span-9">{children}</div>
+    </div>
+  );
+}
+
 /** trust.ts에 실제 자료가 있을 때만 그리는 목록 블록 */
 function TrustBlock({ title, items }: { title: string; items: { main: string; sub?: string }[] }) {
   if (items.length === 0) return null;
   return (
-    <div className="reveal rounded border border-line bg-paper p-6">
+    <div className="reveal border-t border-line-strong/70 pt-5">
       <h3 className="text-base font-bold">{title}</h3>
       <ul className="mt-4 space-y-3">
         {items.map((it) => (
@@ -60,8 +72,9 @@ export function Company() {
   const hasTrust = blocks.some((b) => b.items.length > 0);
 
   return (
-    <section id="company" aria-labelledby="company-title" className="bg-paper py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section id="company" aria-labelledby="company-title" className="bg-paper">
+      {/* 브랜드 소개 · 사업 영역 · 운영 방식 */}
+      <div className="mx-auto max-w-7xl px-5 py-24 sm:px-8 sm:py-32">
         <SectionTitle
           id="company-title"
           eyebrow="About LOGEET"
@@ -84,54 +97,57 @@ export function Company() {
           </ul>
         )}
 
-        <div className="mt-14 grid gap-12 lg:mt-16 lg:grid-cols-12 lg:gap-16">
-          <div className="space-y-12 lg:col-span-5">
-            <div className="reveal border-t-2 border-navy pt-6">
-              <h3 className="text-[13px] font-bold tracking-wide text-sub">사업 영역</h3>
-              <ul className="mt-4 grid gap-x-6 sm:grid-cols-2 lg:grid-cols-1">
-                {AREAS.map((a) => (
-                  <li key={a} className="border-b border-line py-3 text-base font-semibold">
-                    {a}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="reveal border-t-2 border-navy pt-6">
-              <h3 className="text-[13px] font-bold tracking-wide text-sub">운영 방식</h3>
-              <ol className="mt-4 space-y-4">
-                {PRINCIPLES.map((p, i) => (
-                  <li key={p.title} className="flex gap-4">
-                    <span className="pt-0.5 text-sm font-bold tabular-nums text-blue">{String(i + 1).padStart(2, "0")}</span>
-                    <p className="text-[15px] leading-relaxed">
-                      <span className="block text-base font-bold">{p.title}</span>
-                      <span className="text-body">{p.desc}</span>
-                    </p>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
+        {/* 사업 영역 — 2×2, 얇은 선으로만 구분 */}
+        <Block title="사업 영역" className="mt-16 border-t border-line pt-12 lg:mt-20">
+          <ul className="grid border-t border-line-strong/70 sm:grid-cols-2 sm:gap-x-10">
+            {AREAS.map((a, i) => (
+              <li key={a} className="flex items-baseline gap-4 border-b border-line py-5">
+                <span className="text-[13px] font-bold tabular-nums text-sub">{pad(i + 1)}</span>
+                <span className="text-[17px] font-semibold text-navy">{a}</span>
+              </li>
+            ))}
+          </ul>
+        </Block>
 
-          <div className="reveal border-t-2 border-navy pt-6 lg:col-span-7">
-            <h3 className="text-[13px] font-bold tracking-wide text-sub">기업 정보</h3>
-            <dl className="mt-2 divide-y divide-line border-b border-line">
-              {INFO.map(([k, v]) => (
-                <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-4 py-4 text-[15px] sm:grid-cols-[9rem_1fr]">
-                  <dt className="font-medium text-sub">{k}</dt>
-                  <dd className="text-ink">{v}</dd>
+        {/* 운영 방식 — 가로로 이어지는 3단계 */}
+        <Block title="운영 방식" className="mt-14 border-t border-line pt-12">
+          <ol className="grid gap-10 sm:grid-cols-3 sm:gap-8">
+            {PRINCIPLES.map((p, i) => (
+              <li key={p.title}>
+                <div className="flex items-center gap-4">
+                  <span className="text-[13px] font-bold tabular-nums text-blue">{pad(i + 1)}</span>
+                  {i < PRINCIPLES.length - 1 && <span aria-hidden="true" className="hidden h-px flex-1 bg-line-strong sm:block" />}
                 </div>
-              ))}
-            </dl>
-          </div>
-        </div>
+                <p className="mt-4 text-lg font-bold text-navy">{p.title}</p>
+                <p className="mt-2 text-[15px] leading-relaxed text-body">{p.desc}</p>
+              </li>
+            ))}
+          </ol>
+        </Block>
 
         {hasTrust && (
-          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {blocks.map((b) => (
               <TrustBlock key={b.title} title={b.title} items={b.items} />
             ))}
           </div>
         )}
+      </div>
+
+      {/* 기업 정보 — 옅은 회색 띠로 분리, 카드·그림자 없이 정보 표만 */}
+      <div className="border-t border-line bg-gray">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20">
+          <Block title="기업 정보">
+            <dl className="border-t border-line-strong/70">
+              {INFO.map(([k, v]) => (
+                <div key={k} className="grid gap-1 border-b border-line py-4 text-[15px] sm:grid-cols-[10rem_1fr] sm:gap-6">
+                  <dt className="font-medium text-sub">{k}</dt>
+                  <dd className="min-w-0 text-ink">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </Block>
+        </div>
       </div>
     </section>
   );
