@@ -13,7 +13,7 @@ const pretendard = localFont({
   ],
 });
 
-const TITLE = "로지트 LOGEET | 물류비가 보이는 풀필먼트 · 통합 물류대행";
+const TITLE = "로지트 LOGEET | 물류의 흐름을 읽고, 데이터로 운영 효율을 높입니다";
 const DESCRIPTION =
   "주식회사 로지트는 창고보관·풀필먼트, 임시차·지입차·간선운송, B2B·B2C 택배 배송대행을 한 곳에서 운영하고, 예산 대비 집행률과 항목별 물류비를 고객사 전용 시스템으로 보고합니다.";
 
@@ -30,9 +30,10 @@ export const metadata: Metadata = {
     siteName: "로지트 LOGEET",
     title: TITLE,
     description: DESCRIPTION,
-    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "로지트 — 물류비가 보이는 풀필먼트" }],
+    // 파일명을 바꿔야 카톡·슬랙 등이 예전 미리보기를 다시 가져온다
+    images: [{ url: "/og-v2.jpg", width: 1200, height: 630, alt: "로지트 — 물류의 흐름을 읽고, 데이터로 운영 효율을 높입니다" }],
   },
-  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: ["/og.jpg"] },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESCRIPTION, images: ["/og-v2.jpg"] },
 };
 
 export const viewport: Viewport = {
