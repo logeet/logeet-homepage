@@ -2,13 +2,21 @@ import Image from "next/image";
 import { COMPANY } from "@/lib/company";
 import { TRUST } from "@/lib/trust";
 import { SectionTitle } from "./Services";
+import { AREA_ILLUSTRATIONS, PRINCIPLE_ILLUSTRATIONS } from "./AboutIllustrations";
 
-const AREAS = ["창고보관 · 풀필먼트", "임시차 · 지입차 · 간선운송", "택배 배송대행 (B2B · B2C)", "물류 관리 시스템 운영"];
+// 설명은 서비스 섹션(Services.tsx)의 각 서비스 소개 문구와 같다
+const AREAS = [
+  { name: "창고보관 · 풀필먼트", desc: "입고부터 출고까지 상품 흐름 전체를 직접 운영합니다." },
+  { name: "임시차 · 지입차 · 간선운송", desc: "매장과 물류센터를 잇는 운송을 운영하고 비용까지 관리합니다." },
+  { name: "택배 배송대행 (B2B · B2C)", desc: "B2B·B2C 택배 발송을 대행하고 채널별로 비용을 나눠 봅니다." },
+  { name: "물류 관리 시스템 운영", desc: "운영 현황과 비용을 고객사 전용 화면으로 제공합니다." },
+];
 
 const PRINCIPLES = [
-  { title: "단일 창구", desc: "보관, 운송, 택배를 로지트가 한 창구에서 관리합니다." },
+  { title: "통합 관리", desc: "보관, 운송, 택배를 로지트가 한 곳에서 관리합니다." },
   { title: "데이터 공유", desc: "운영 현황과 비용을 고객사 전용 화면으로 공유합니다." },
   { title: "정기 보고", desc: "매월 계획 대비 실적과 항목별 비용을 보고합니다." },
+  { title: "월마감", desc: "매월 운영 실적과 비용을 확정해 마감합니다." },
 ];
 
 const INFO: [string, React.ReactNode][] = [
@@ -17,6 +25,7 @@ const INFO: [string, React.ReactNode][] = [
   ["사업자등록번호", COMPANY.bizNo],
   ["업태 / 종목", `${COMPANY.industry} / ${COMPANY.businessType}`],
   ["본사 소재지", COMPANY.address],
+  ["물류센터", COMPANY.centerAddress],
   [
     "대표 전화",
     <a key="tel" href={`tel:${COMPANY.phone}`} className="-my-2.5 inline-block py-2.5 font-semibold text-blue hover:underline">
@@ -78,9 +87,9 @@ export function Company() {
         <SectionTitle
           id="company-title"
           eyebrow="About LOGEET"
-          title="물류를 한 창구에서 책임지고, 숫자를 숨기지 않습니다"
-          desc="로지트는 보관·운송·택배를 한 창구에서 관리하는 통합 물류 회사입니다. 운영 데이터를 고객사와 공유하고 비용을 항목별로 보고하는 것을 원칙으로 합니다."
-          split
+          title="물류의 전 과정을 로지트가 하나로 책임집니다"
+          desc="보관·운송·택배를 한 곳에서 관리하고, 운영 데이터와 비용을 고객사와 투명하게 공유합니다."
+          oneLine
         />
 
         {/* 실제 현장 사진 — trust.ts 의 photos 에 입력된 경우에만 표시 */}
@@ -97,31 +106,58 @@ export function Company() {
           </ul>
         )}
 
-        {/* 사업 영역 — 2×2, 얇은 선으로만 구분 */}
+        {/* 사업 영역 — 운영 방식과 같은 구성: 그림 / 번호 + 선 / 이름 */}
         <Block title="사업 영역" className="mt-16 border-t border-line pt-12 lg:mt-20">
-          <ul className="grid border-t border-line-strong/70 sm:grid-cols-2 sm:gap-x-10">
-            {AREAS.map((a, i) => (
-              <li key={a} className="flex items-baseline gap-4 border-b border-line py-5">
-                <span className="text-[13px] font-bold tabular-nums text-sub">{pad(i + 1)}</span>
-                <span className="text-[17px] font-semibold text-navy">{a}</span>
-              </li>
-            ))}
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+            {AREAS.map((a, i) => {
+              const Art = AREA_ILLUSTRATIONS[i];
+              return (
+                <li key={a.name}>
+                  <div className="mb-5 flex h-24 items-end justify-center sm:h-28">
+                    <Art />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[13px] font-bold tabular-nums text-blue">{pad(i + 1)}</span>
+                    <span aria-hidden="true" className="h-px flex-1 bg-line-strong" />
+                  </div>
+                  <p className="mt-4 text-lg font-bold text-navy">
+                    {/* 괄호 부분은 쪼개지지 않고 통째로 다음 줄로 */}
+                    {a.name.split(/(\(.*\))/).map((part) =>
+                      part.startsWith("(") ? (
+                        <span key={part} className="whitespace-nowrap">
+                          {part}
+                        </span>
+                      ) : (
+                        part
+                      ),
+                    )}
+                  </p>
+                  <p className="mt-2 text-[15px] leading-relaxed text-body">{a.desc}</p>
+                </li>
+              );
+            })}
           </ul>
         </Block>
 
-        {/* 운영 방식 — 가로로 이어지는 3단계 */}
+        {/* 운영 방식 — 그림 + 가로로 이어지는 4단계 (사업 영역과 같은 구성) */}
         <Block title="운영 방식" className="mt-14 border-t border-line pt-12">
-          <ol className="grid gap-10 sm:grid-cols-3 sm:gap-8">
-            {PRINCIPLES.map((p, i) => (
-              <li key={p.title}>
-                <div className="flex items-center gap-4">
-                  <span className="text-[13px] font-bold tabular-nums text-blue">{pad(i + 1)}</span>
-                  {i < PRINCIPLES.length - 1 && <span aria-hidden="true" className="hidden h-px flex-1 bg-line-strong sm:block" />}
-                </div>
-                <p className="mt-4 text-lg font-bold text-navy">{p.title}</p>
-                <p className="mt-2 text-[15px] leading-relaxed text-body">{p.desc}</p>
-              </li>
-            ))}
+          <ol className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+            {PRINCIPLES.map((p, i) => {
+              const Art = PRINCIPLE_ILLUSTRATIONS[i];
+              return (
+                <li key={p.title}>
+                  <div className="mb-5 flex h-24 items-end justify-center sm:h-28">
+                    <Art />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-[13px] font-bold tabular-nums text-blue">{pad(i + 1)}</span>
+                    <span aria-hidden="true" className="h-px flex-1 bg-line-strong" />
+                  </div>
+                  <p className="mt-4 text-lg font-bold text-navy">{p.title}</p>
+                  <p className="mt-2 text-[15px] leading-relaxed text-body">{p.desc}</p>
+                </li>
+              );
+            })}
           </ol>
         </Block>
 

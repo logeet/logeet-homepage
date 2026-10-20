@@ -127,9 +127,9 @@ function Photo({ s, sizes, className = "" }: { s: Service; sizes: string; classN
         alt={s.alt}
         fill
         sizes={sizes}
-        className="object-cover contrast-[1.05] saturate-[.78] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+        className="object-cover brightness-[.96] contrast-[1.06] saturate-[.55] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
       />
-      <div aria-hidden="true" className="absolute inset-0 bg-navy/15 mix-blend-multiply" />
+      <div aria-hidden="true" className="absolute inset-0 bg-navy/20 mix-blend-multiply" />
     </div>
   );
 }
@@ -140,7 +140,7 @@ function Head({ s, i }: { s: Service; i: number }) {
       <p className="text-[13px] font-bold tabular-nums tracking-[0.14em] text-sub">
         <span className="text-blue">{pad(i + 1)}</span> / {pad(SERVICES.length)}
       </p>
-      <h3 id={`${s.id}-title`} className="mt-4 text-[1.75rem] font-bold leading-tight tracking-[-0.02em] sm:text-[2.25rem] lg:text-[2.5rem]">
+      <h3 id={`${s.id}-title`} className="mt-4 text-[1.6rem] font-bold leading-tight tracking-[-0.02em] sm:text-[1.875rem] lg:text-[2rem]">
         {s.title}
       </h3>
       <p className="mt-4 text-base leading-[1.75] text-body sm:text-[17px]">{s.lead}</p>
@@ -218,7 +218,7 @@ export function Services() {
           id="services-title"
           eyebrow="Services"
           title="보관부터 운송, 택배까지 한 곳에서 운영합니다"
-          desc="여러 업체에 나눠 맡기면 비용도 책임도 흩어집니다. 로지트는 물류 전 구간을 한 창구에서 관리하고 비용을 한 화면으로 정리합니다."
+          desc="여러 업체에 나눠 맡기면 비용도 책임도 흩어집니다. 로지트는 물류 전 구간을 한 곳에서 관리하고 비용을 한 화면으로 정리합니다."
           oneLine
         />
 

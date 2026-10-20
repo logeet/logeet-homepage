@@ -10,26 +10,28 @@ const OX = 120;
 const OY = 150;
 const GAP = 14; // 구역 간 간격(격자)
 
-type Face = { top: string; left: string; right: string };
+export type Face = { top: string; left: string; right: string };
 
-const BOX: Face = { top: "#efcf9f", left: "#dcae70", right: "#c99556" };
-const BLUE: Face = { top: "#60a5fa", left: "#1d4ed8", right: "#1d4ed8" };
-const FLOOR: Face = { top: "#ffffff", left: "#e6ebf3", right: "#d8dfea" };
+// 그림 부품 색 — Why LOGEET 그림(ValueIllustrations)도 같은 색을 쓴다
+export const BOX: Face = { top: "#efcf9f", left: "#dcae70", right: "#c99556" };
+export const BLUE: Face = { top: "#60a5fa", left: "#1d4ed8", right: "#1d4ed8" };
+export const FLOOR: Face = { top: "#ffffff", left: "#e6ebf3", right: "#d8dfea" };
 const BELT: Face = { top: "#475569", left: "#1d4ed8", right: "#1d4ed8" };
-const WOOD: Face = { top: "#d6b07a", left: "#b98d55", right: "#a57a45" };
+export const WOOD: Face = { top: "#d6b07a", left: "#b98d55", right: "#a57a45" };
 const ORANGE: Face = { top: "#fb923c", left: "#ea580c", right: "#c2410c" };
-const GLASS: Face = { top: "#dbeafe", left: "#bfdbfe", right: "#93c5fd" };
-const TRAILER: Face = { top: "#ffffff", left: "#e2e8f0", right: "#cbd5e1" };
+export const GLASS: Face = { top: "#dbeafe", left: "#bfdbfe", right: "#93c5fd" };
+export const TRAILER: Face = { top: "#ffffff", left: "#e2e8f0", right: "#cbd5e1" };
 const CHASSIS: Face = { top: "#94a3b8", left: "#64748b", right: "#475569" };
-const SCREEN: Face = { top: "#e2e8f0", left: "#f8fafc", right: "#94a3b8" };
+export const SCREEN: Face = { top: "#e2e8f0", left: "#f8fafc", right: "#94a3b8" };
 const TIRE: Face = { top: "#475569", left: "#1e293b", right: "#0f172a" };
-const SHELF: Face = { top: "#e2e8f0", left: "#cbd5e1", right: "#94a3b8" };
+export const SHELF: Face = { top: "#e2e8f0", left: "#cbd5e1", right: "#94a3b8" };
 
-const p = (x: number, y: number, z: number) =>
+/** 격자 좌표 → 화면 좌표. 원점(0,0,0)은 화면 (OX, OY) */
+export const p = (x: number, y: number, z: number) =>
   `${(OX + (x - y) * C * U).toFixed(1)},${(OY + (x + y) * 0.5 * U - z * U).toFixed(1)}`;
 
 /** 직육면체: (x,y,z)에서 w(x방향)·d(y방향)·h(높이) */
-function Cube({ x, y, z = 0, w, d, h, c }: { x: number; y: number; z?: number; w: number; d: number; h: number; c: Face }) {
+export function Cube({ x, y, z = 0, w, d, h, c }: { x: number; y: number; z?: number; w: number; d: number; h: number; c: Face }) {
   return (
     <g strokeWidth={0.6} stroke="rgba(15,23,42,0.08)" strokeLinejoin="round">
       <polygon fill={c.left} points={[p(x, y + d, z), p(x + w, y + d, z), p(x + w, y + d, z + h), p(x, y + d, z + h)].join(" ")} />
@@ -39,12 +41,12 @@ function Cube({ x, y, z = 0, w, d, h, c }: { x: number; y: number; z?: number; w
   );
 }
 
-const Box = ({ x, y, z = 0, s = 1.3 }: { x: number; y: number; z?: number; s?: number }) => (
+export const Box = ({ x, y, z = 0, s = 1.3 }: { x: number; y: number; z?: number; s?: number }) => (
   <Cube x={x} y={y} z={z} w={s} d={s} h={s} c={BOX} />
 );
 
 /** 팔레트랙 한 대: 기둥 4개 + 선반 3단 + 박스 */
-function Rack({ x, y }: { x: number; y: number }) {
+export function Rack({ x, y }: { x: number; y: number }) {
   const shelves = [0.2, 2.2, 4.2];
   return (
     <g>
@@ -64,7 +66,7 @@ function Rack({ x, y }: { x: number; y: number }) {
   );
 }
 
-function Truck({ x, y, flip = false }: { x: number; y: number; flip?: boolean }) {
+export function Truck({ x, y, flip = false }: { x: number; y: number; flip?: boolean }) {
   // flip=false: 화물칸이 왼쪽(x 작은 쪽), 운전석이 오른쪽
   const cabX = flip ? x : x + 6;
   const boxX = flip ? x + 2.2 : x;

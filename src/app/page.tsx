@@ -18,8 +18,8 @@ export default function Home() {
         <Hero />
         <Values />
         <Services />
-        <Dashboard />
         <Flow />
+        <Dashboard />
         <OsTabs />
         <Company />
         <QuoteForm />

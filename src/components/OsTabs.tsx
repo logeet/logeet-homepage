@@ -8,7 +8,7 @@ import { ProductMockup } from "./ProductMockup";
 /** 시스템 화면을 단순화한 창 틀 (주소창 + 본문) */
 function Window({ children }: { children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden bg-white text-ink">
+    <div className="flex h-full flex-col overflow-hidden bg-white text-ink">
       <div className="flex items-center gap-2 border-b border-line bg-gray px-5 py-3">
         <span className="size-2.5 rounded-full bg-slate-300" />
         <span className="size-2.5 rounded-full bg-slate-300" />
@@ -18,7 +18,66 @@ function Window({ children }: { children: React.ReactNode }) {
         </span>
         <span className="ml-auto text-[12px] font-semibold text-sub">예시 데이터</span>
       </div>
-      <div className="p-6 sm:p-9">{children}</div>
+      {/* 본문은 남는 높이를 채운다 — 각 화면의 마지막 블록(flex-1)이 늘어나 아래 빈 공간이 생기지 않음 */}
+      <div className="flex flex-1 flex-col p-5 sm:p-7">{children}</div>
+    </div>
+  );
+}
+
+const fmt = (n: number) => n.toLocaleString("ko-KR");
+
+/** 화면 상단 지표 한 줄 (3칸) */
+function Kpis({ items }: { items: [label: string, value: string, unit: string, accent?: boolean][] }) {
+  return (
+    <dl className="grid grid-cols-3 divide-x divide-line rounded-md border border-line">
+      {items.map(([l, v, u, a]) => (
+        <div key={l} className="px-3 py-3 sm:px-4">
+          <dt className="text-[11px] font-semibold text-sub sm:text-[12px]">{l}</dt>
+          <dd className={`mt-1.5 text-lg font-bold leading-none tabular-nums sm:text-xl ${a ? "text-blue" : "text-ink"}`}>
+            {v}
+            <span className="ml-0.5 text-[11px] font-medium text-sub">{u}</span>
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function PanelTitle({ children, note }: { children: React.ReactNode; note?: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-2">
+      <p className="text-[13px] font-semibold text-charcoal">{children}</p>
+      {note && <p className="text-[11px] text-sub">{note}</p>}
+    </div>
+  );
+}
+
+/**
+ * 막대 차트 공통 — 빈 칸(spacer)과 막대를 flex 비율로 나눠, 차트 영역이 늘어난 만큼 막대도 같은 비율로 커진다.
+ * spacer : 막대 = (최댓값×1.2 − 값) : 값 → 가장 큰 막대 위에도 숫자 들어갈 여유가 남는다.
+ */
+function GrowBar({ value, max, children }: { value: number; max: number; children: React.ReactNode }) {
+  return (
+    <>
+      <div aria-hidden="true" style={{ flex: max * 1.2 - value }} />
+      {children}
+    </>
+  );
+}
+
+function MiniBars({ data, labels, highlight }: { data: number[]; labels: string[]; highlight?: number }) {
+  const max = Math.max(...data);
+  return (
+    <div className="mt-3 flex min-h-[130px] flex-1 gap-2">
+      {data.map((v, i) => (
+        <div key={labels[i]} className="flex flex-1 flex-col items-center">
+          <GrowBar value={v} max={max}>
+            <span className="mb-1 text-[10px] tabular-nums text-sub">{fmt(v)}</span>
+            <div className={`w-full rounded-t-sm ${i === highlight ? "bg-blue" : "bg-blue/25"}`} style={{ flex: v }} />
+          </GrowBar>
+          <span className="mt-1.5 text-[11px] text-sub">{labels[i]}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -32,88 +91,166 @@ const RACK = [
 ];
 const CELL = ["bg-slate-200", "bg-blue/40", "bg-blue"];
 
+const ZONES: [string, number][] = [
+  ["A구역", 86],
+  ["B구역", 74],
+  ["C구역", 81],
+];
+const OUTBOUND = [520, 610, 580, 702, 655, 430, 642]; // 최근 7일 박스 출고 (마지막 = 오늘)
+const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
+
 function StorageView() {
   const cells = RACK.flat();
   const rate = Math.round((cells.reduce((s, c) => s + c, 0) / (cells.length * 2)) * 100);
   return (
     <Window>
-      <div className="flex items-end justify-between">
-        <p className="text-sm font-semibold text-body">센터 랙 적재 현황</p>
-        <p className="text-right">
-          <span className="block text-[12px] text-sub">적재율</span>
-          <span className="text-2xl font-bold tabular-nums">{rate}%</span>
-        </p>
+      <Kpis
+        items={[
+          ["적재율", `${rate}`, "%", true],
+          ["보관 SKU", "1,284", "개"],
+          ["오늘 출고", fmt(OUTBOUND[OUTBOUND.length - 1]), "박스"],
+        ]}
+      />
+      <div className="mt-6 grid gap-6 sm:grid-cols-[1.5fr_1fr]">
+        <div>
+          <PanelTitle>랙 적재 현황</PanelTitle>
+          <div className="mt-3 grid grid-cols-8 gap-1">
+            {cells.map((c, i) => (
+              <span key={i} className={`h-6 rounded-[2px] sm:h-8 ${CELL[c]}`} />
+            ))}
+          </div>
+          <div className="mt-3 flex gap-4 text-[11px] text-body">
+            {["적재", "일부", "빈 칸"].map((l, i) => (
+              <span key={l} className="flex items-center gap-1.5">
+                <span className={`size-2 rounded-[2px] ${CELL[2 - i]}`} />
+                {l}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div>
+          <PanelTitle>구역별 적재율</PanelTitle>
+          <ul className="mt-3 space-y-3.5">
+            {ZONES.map(([z, v]) => (
+              <li key={z}>
+                <div className="flex justify-between text-[12px]">
+                  <span className="font-semibold text-charcoal">{z}</span>
+                  <span className="tabular-nums text-body">{v}%</span>
+                </div>
+                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-gray">
+                  <div className="h-full rounded-full bg-blue" style={{ width: `${v}%` }} />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div className="mt-4 grid grid-cols-8 gap-1.5">
-        {cells.map((c, i) => (
-          <span key={i} className={`h-8 rounded-sm sm:h-11 ${CELL[c]}`} />
-        ))}
-      </div>
-      <div className="mt-4 flex gap-4 text-[12px] text-body">
-        {["적재", "일부", "빈 칸"].map((l, i) => (
-          <span key={l} className="flex items-center gap-1.5">
-            <span className={`size-2.5 rounded-sm ${CELL[2 - i]}`} />
-            {l}
-          </span>
-        ))}
+      <div className="mt-6 flex flex-1 flex-col border-t border-line pt-5">
+        <PanelTitle note="최근 7일 · 박스">일별 박스 출고</PanelTitle>
+        <MiniBars data={OUTBOUND} labels={DAYS} highlight={OUTBOUND.length - 1} />
       </div>
     </Window>
   );
 }
 
 const ROUTES = [
-  { name: "노선 A", type: "임시차", cost: 3120 },
-  { name: "노선 B", type: "고정계약", cost: 2860 },
-  { name: "노선 C", type: "임시차", cost: 1940 },
+  { name: "노선 A", type: "임시차", cost: 3120, trips: 42 },
+  { name: "노선 B", type: "고정계약", cost: 2860, trips: 30 },
+  { name: "노선 C", type: "임시차", cost: 1940, trips: 27 },
 ];
+const WEEKS = [1180, 1320, 1240, 1320]; // 이번 달 주차별 임시차 비용 — 합계 = 노선 A + C
 
 function RouteView() {
+  const temp = ROUTES.filter((r) => r.type === "임시차").reduce((s, r) => s + r.cost, 0);
+  const fixed = ROUTES.filter((r) => r.type === "고정계약").reduce((s, r) => s + r.cost, 0);
+  const total = temp + fixed;
   return (
     <Window>
-      <p className="text-sm font-semibold text-body">노선별 임시차 누적 비용</p>
-      <ul className="mt-4 divide-y divide-line">
-        {ROUTES.map((r) => (
-          <li key={r.name} className="flex items-center gap-3 py-4 sm:py-5">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-soft text-blue">
-              <Truck aria-hidden="true" className="size-4" />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold leading-snug">{r.name}</p>
-              <p className="text-[12px] text-sub">{r.type}</p>
-            </div>
-            <p className="shrink-0 text-right text-[15px] font-bold tabular-nums">
-              {r.cost.toLocaleString("ko-KR")}
-              <span className="ml-0.5 text-[12px] font-medium text-sub">만원</span>
-            </p>
-          </li>
-        ))}
-      </ul>
+      <Kpis
+        items={[
+          ["임시차 누적", fmt(temp), "만원", true],
+          ["고정계약", fmt(fixed), "만원"],
+          ["운행", fmt(ROUTES.reduce((s, r) => s + r.trips, 0)), "회"],
+        ]}
+      />
+      <div className="mt-6">
+        <PanelTitle note="이번 달 누적">노선별 운송 비용</PanelTitle>
+        <ul className="mt-2 divide-y divide-line">
+          {ROUTES.map((r) => (
+            <li key={r.name} className="flex items-center gap-3 py-3">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-blue-soft text-blue">
+                <Truck aria-hidden="true" className="size-4" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className="text-[14px] font-semibold">
+                    {r.name} <span className="ml-1 text-[11px] font-medium text-sub">{r.type} · {r.trips}회</span>
+                  </p>
+                  <p className="shrink-0 text-[14px] font-bold tabular-nums">
+                    {fmt(r.cost)}
+                    <span className="ml-0.5 text-[11px] font-medium text-sub">만원</span>
+                  </p>
+                </div>
+                <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-gray">
+                  <div className={`h-full rounded-full ${r.type === "임시차" ? "bg-blue" : "bg-slate-400"}`} style={{ width: `${(r.cost / total) * 100}%` }} />
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="mt-4 flex flex-1 flex-col border-t border-line pt-5">
+        <PanelTitle note="이번 달 · 만원">주차별 임시차 비용</PanelTitle>
+        <MiniBars data={WEEKS} labels={["1주", "2주", "3주", "4주"]} highlight={WEEKS.length - 1} />
+      </div>
     </Window>
   );
 }
 
 const PARCEL = { b2c: 7740, b2b: 4740 };
+const PARCEL_COST = { b2c: 1180, b2b: 470 }; // 물류비 대시보드 6월 B2C·B2B 택배비와 같은 예시 값
+// 최근 6개월 채널별 출고 (마지막 = 이번 달)
+const PARCEL_TREND = {
+  m: ["1월", "2월", "3월", "4월", "5월", "6월"],
+  b2c: [6900, 7100, 7600, 7300, 7500, PARCEL.b2c],
+  b2b: [4300, 4450, 4600, 4500, 4620, PARCEL.b2b],
+};
 
 function ParcelView() {
   const total = PARCEL.b2c + PARCEL.b2b;
   const b2c = PARCEL.b2c / total;
   const R = 52;
   const L = 2 * Math.PI * R;
+  const sums = PARCEL_TREND.m.map((_, i) => PARCEL_TREND.b2c[i] + PARCEL_TREND.b2b[i]);
+  const prev = sums[sums.length - 2];
+  const mom = ((total - prev) / prev) * 100;
+  const max = Math.max(...sums);
   return (
     <Window>
-      <p className="text-sm font-semibold text-body">이번 달 택배 출고</p>
+      <PanelTitle note="박스">이번 달 택배 출고</PanelTitle>
       <div className="mt-4 flex items-center gap-6 sm:gap-8">
-        <svg viewBox="0 0 140 140" className="size-32 shrink-0 -rotate-90 sm:size-36" aria-hidden="true">
+        <svg viewBox="0 0 140 140" className="size-28 shrink-0 -rotate-90 sm:size-32" aria-hidden="true">
           <circle cx="70" cy="70" r={R} fill="none" stroke="#0d9488" strokeWidth="18" />
           <circle cx="70" cy="70" r={R} fill="none" stroke="#1d4ed8" strokeWidth="18" strokeDasharray={`${b2c * L - 3} ${L}`} />
         </svg>
         <div className="flex-1">
-          <p className="text-[12px] text-sub">총 출고</p>
-          <p className="text-2xl font-bold tabular-nums">
-            {total.toLocaleString("ko-KR")}
-            <span className="ml-1 text-sm font-medium text-sub">박스</span>
-          </p>
-          <ul className="mt-4 space-y-2 text-[14px]">
+          <div className="flex items-baseline justify-between gap-3">
+            <div>
+              <p className="text-[12px] text-sub">총 출고</p>
+              <p className="text-2xl font-bold tabular-nums">
+                {fmt(total)}
+                <span className="ml-1 text-sm font-medium text-sub">박스</span>
+              </p>
+            </div>
+            <p className="text-right">
+              <span className="block text-[11px] text-sub">전월 대비</span>
+              <span className="text-[15px] font-bold tabular-nums text-blue">
+                {mom >= 0 ? "+" : ""}
+                {mom.toFixed(1)}%
+              </span>
+            </p>
+          </div>
+          <ul className="mt-3 space-y-2 text-[14px]">
             {[
               ["B2C", PARCEL.b2c, "bg-blue"],
               ["B2B", PARCEL.b2b, "bg-teal-600"],
@@ -122,11 +259,126 @@ function ParcelView() {
                 <span className={`size-2.5 rounded-sm ${c}`} />
                 <span className="font-semibold">{k}</span>
                 <span className="ml-auto tabular-nums text-body">
-                  {(v as number).toLocaleString("ko-KR")} · {Math.round(((v as number) / total) * 100)}%
+                  {fmt(v as number)} · {Math.round(((v as number) / total) * 100)}%
                 </span>
               </li>
             ))}
           </ul>
+        </div>
+      </div>
+      <div className="mt-6 flex flex-1 flex-col border-t border-line pt-5">
+        <PanelTitle note="최근 6개월 · 박스">채널별 출고 추이</PanelTitle>
+        <div className="mt-3 flex min-h-[130px] flex-1 gap-3">
+          {PARCEL_TREND.m.map((m, i) => (
+            <div key={m} className="flex flex-1 flex-col items-center">
+              <GrowBar value={sums[i]} max={max}>
+                <span className="mb-1 text-[10px] tabular-nums text-sub">{fmt(sums[i])}</span>
+                <div className="flex w-full flex-col overflow-hidden rounded-t-sm" style={{ flex: sums[i] }}>
+                  <div className="bg-blue" style={{ flex: PARCEL_TREND.b2c[i] }} />
+                  <div className="bg-teal-600" style={{ flex: PARCEL_TREND.b2b[i] }} />
+                </div>
+              </GrowBar>
+              <span className="mt-1.5 text-[11px] text-sub">{m}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* 채널별 택배 비용 — 물류비 대시보드 6월 예시 값과 같음 */}
+      <div className="mt-6 border-t border-line pt-5">
+        <PanelTitle note="이번 달 · 만원">채널별 택배 비용</PanelTitle>
+        <dl className="mt-3 grid grid-cols-2 gap-3">
+          {[
+            ["B2C 택배비", PARCEL_COST.b2c, "bg-blue"],
+            ["B2B 택배비", PARCEL_COST.b2b, "bg-teal-600"],
+          ].map(([k, v, c]) => (
+            <div key={k as string} className="rounded-md border border-line px-4 py-3">
+              <dt className="flex items-center gap-1.5 text-[12px] font-semibold text-sub">
+                <span className={`size-2 rounded-[2px] ${c}`} />
+                {k}
+              </dt>
+              <dd className="mt-1.5 text-lg font-bold tabular-nums">
+                {fmt(v as number)}
+                <span className="ml-0.5 text-[11px] font-medium text-sub">만원</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </Window>
+  );
+}
+
+/** 강조할 수치는 { b } 로 — 실제 시스템의 분석 인사이트처럼 굵게 따옴표 표시 */
+type Part = string | { b: string };
+
+function InsightView() {
+  const total = PARCEL.b2c + PARCEL.b2b;
+  const sums = PARCEL_TREND.m.map((_, i) => PARCEL_TREND.b2c[i] + PARCEL_TREND.b2b[i]);
+  const mom = ((total - sums[sums.length - 2]) / sums[sums.length - 2]) * 100;
+  const temp = ROUTES.filter((r) => r.type === "임시차");
+  const tempSum = temp.reduce((s, r) => s + r.cost, 0);
+  const top = temp.reduce((a, r) => (r.cost > a.cost ? r : a));
+  const [zone, zoneRate] = ZONES.reduce((a, z) => (z[1] > a[1] ? z : a));
+  // 3월 계획 4,300 · 실적 4,700 — 물류비 대시보드 섹션의 예시 값
+  const marchOver = Math.round(((4700 - 4300) / 4300) * 100);
+  // 센터 운영 현황 탭의 최근 7일 출고(OUTBOUND)에서 계산
+  const peak = Math.max(...OUTBOUND);
+  const peakDay = DAYS[OUTBOUND.indexOf(peak)];
+  const weekdayAvg = OUTBOUND.slice(0, 5).reduce((s, v) => s + v, 0) / 5;
+  const satGap = Math.round((1 - OUTBOUND[5] / weekdayAvg) * 100);
+
+  const items: { tag: string; parts: Part[] }[] = [
+    {
+      tag: "물동량",
+      parts: ["이번 달 택배 출고는 ", { b: `${fmt(total)} 박스` }, `(B2C ${fmt(PARCEL.b2c)} · B2B ${fmt(PARCEL.b2b)})로 전월 대비 `, { b: `${mom >= 0 ? "+" : ""}${mom.toFixed(1)}%` }, " 늘었습니다."],
+    },
+    { tag: "적재율", parts: [{ b: zone }, " 적재율이 ", { b: `${zoneRate}%` }, "로 85% 이상입니다. 추가 입고 시 공간 확보가 필요합니다."] },
+    { tag: "운송비", parts: ["임시차 비용의 ", { b: `${Math.round((top.cost / tempSum) * 100)}%` }, "가 ", { b: top.name }, "에 집중되어 있습니다."] },
+    { tag: "예산", parts: [{ b: "3월" }, " 운송비 실적이 계획 대비 ", { b: `${marchOver}%` }, " 초과했습니다."] },
+    { tag: "출고", parts: ["최근 7일 중 ", { b: `${peakDay}요일` }, " 박스 출고가 ", { b: `${fmt(peak)} 박스` }, "로 가장 많았습니다."] },
+    { tag: "출고", parts: [{ b: "토요일" }, " 출고는 평일 평균보다 ", { b: `${satGap}%` }, " 적습니다. 주말 인력 배치를 조정할 수 있습니다."] },
+  ];
+
+  return (
+    <Window>
+      <div className="flex items-center justify-between gap-3">
+        <p className="flex items-center gap-2.5 text-[17px] font-bold text-blue">
+          <span aria-hidden="true" className="h-5 w-1 rounded-full bg-blue" />
+          분석 인사이트
+        </p>
+        <span className="rounded border border-line bg-gray px-2 py-0.5 text-[11px] font-semibold text-sub">최근 보고일 기준 자동 요약</span>
+      </div>
+      {/* 문장 행들이 남는 높이를 고르게 나눠 가짐 */}
+      <ul className="mt-5 flex flex-1 flex-col divide-y divide-line border-y border-line">
+        {items.map((it, n) => (
+          <li key={n} className="flex flex-1 items-center gap-3 py-3.5">
+            <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-blue" />
+            <p className="flex-1 text-[14px] leading-relaxed text-charcoal">
+              {it.parts.map((p, i) =>
+                typeof p === "string" ? (
+                  p
+                ) : (
+                  <b key={i} className="font-bold text-ink">
+                    &quot;{p.b}&quot;
+                  </b>
+                ),
+              )}
+            </p>
+            <span className="shrink-0 rounded bg-blue-soft px-2 py-0.5 text-[11px] font-bold text-blue">{it.tag}</span>
+          </li>
+        ))}
+      </ul>
+      {/* 인사이트의 근거가 된 지표 */}
+      <div className="mt-5">
+        <PanelTitle>근거 지표</PanelTitle>
+        <div className="mt-3">
+          <Kpis
+            items={[
+              ["택배 출고", fmt(total), "박스", true],
+              [`${zone} 적재율`, `${zoneRate}`, "%"],
+              [`${top.name} 임시차`, fmt(top.cost), "만원"],
+            ]}
+          />
         </div>
       </div>
     </Window>
@@ -138,6 +390,7 @@ const TABS = [
   { key: "운송", title: "임시차 · 운송 비용", desc: "노선별 임시차 비용을 고정계약과 구분해 누적합니다.", View: RouteView },
   { key: "택배", title: "택배 B2B · B2C", desc: "택배 출고를 채널별로 나눠 물량과 비중을 봅니다.", View: ParcelView },
   { key: "리포트", title: "예산 대비 실적", desc: "계획 대비 실적과 집행률을 매달 정리합니다.", View: ProductMockup },
+  { key: "인사이트", title: "분석 인사이트", desc: "물동량·적재율·비용 변화를 문장으로 요약해 알려줍니다.", View: InsightView },
 ];
 
 // 고객사 시스템 코드로 확인한 '제공 중' 기능. 개발 예정 기능은 status: "planned"로 추가하면 따로 표시된다.
@@ -148,6 +401,7 @@ const FEATURES: { name: string; status: "live" | "planned" }[] = [
   { name: "시즌 반품 현황 관리", status: "live" },
   { name: "엑셀 · 구글 시트 데이터 업로드 · 동기화", status: "live" },
   { name: "계정별 접근 권한 관리", status: "live" },
+  { name: "분석 인사이트 (물동량 · 적재율 · 비용 변화 자동 요약)", status: "live" }, // 고객사 시스템 화면으로 확인
 ];
 
 export function OsTabs() {
@@ -212,7 +466,7 @@ export function OsTabs() {
 
           {/* 제품 화면 — 얇은 바깥 틀 안에 크게 */}
           <div id="os-panel" aria-live="polite" className="flex min-w-0 flex-col">
-            <div className="flex-1 rounded-xl bg-white/[0.04] p-1.5 ring-1 ring-white/10 sm:p-2.5">
+            <div className="flex-1 rounded-xl bg-white/[0.04] p-1.5 ring-1 ring-white/10 sm:p-2.5 lg:min-h-[660px]">
               <div key={tab.key} className="rise-in h-full overflow-hidden rounded-lg bg-white shadow-product">
                 <tab.View />
               </div>

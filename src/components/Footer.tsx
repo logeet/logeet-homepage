@@ -5,8 +5,9 @@ const INFO: [string, string][] = [
   ["상호", COMPANY.name],
   ["대표", COMPANY.ceo],
   ["사업자등록번호", COMPANY.bizNo],
-  ["주소", COMPANY.address],
   ["TEL", COMPANY.phone],
+  ["본사", COMPANY.address],
+  ["물류센터", COMPANY.centerAddress],
   ["Email", COMPANY.email],
 ];
 
@@ -29,7 +30,7 @@ export function Footer() {
 
           <dl className="grid gap-x-8 gap-y-4 text-[13px] leading-relaxed sm:grid-cols-2 lg:col-span-6">
             {INFO.map(([k, v]) => (
-              <div key={k} className={k === "주소" ? "sm:col-span-2" : ""}>
+              <div key={k}>
                 <dt className="text-[12px] font-semibold text-white/40">{k}</dt>
                 <dd className="mt-0.5 text-white/75">{v}</dd>
               </div>
