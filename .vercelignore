@@ -1,0 +1,4 @@
+# Vercel이 서버에서 직접 빌드하므로 로컬 빌드 산출물·개발 캐시는 올리지 않는다
+# (.next/dev 의 Turbopack 캐시가 100MB를 넘으면 배포가 실패한다)
+.next
+node_modules
