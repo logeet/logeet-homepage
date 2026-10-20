@@ -35,10 +35,10 @@ export function Hero() {
           <span aria-hidden="true" className="h-px w-10 bg-sky-300/80" />
           FULFILLMENT · LOGISTICS
         </p>
-        <h1 className="rise-in mt-7 text-[2.35rem] font-bold leading-[1.2] tracking-[-0.025em] sm:text-6xl sm:leading-[1.12] lg:text-[4.5rem] lg:leading-[1.1] [animation-delay:60ms]">
-          로지트는 물류의 흐름을 읽고,
-          <br />
-          <span className="text-white/90">데이터로 운영 효율을 높입니다.</span>
+        <h1 className="rise-in mt-7 text-balance text-[2.35rem] font-bold leading-[1.2] tracking-[-0.025em] sm:text-6xl sm:leading-[1.12] lg:text-[4.5rem] lg:leading-[1.1] [animation-delay:60ms]">
+          {/* 두 문장을 각각 블록으로 — 좁은 화면에서도 문장마다 줄이 고르게 나뉨 */}
+          <span className="block">로지트는 물류의 흐름을 읽고,</span>
+          <span className="block text-white/90">데이터로 운영 효율을 높입니다.</span>
         </h1>
         <p className="rise-in mt-8 max-w-2xl text-base leading-[1.75] text-white/70 sm:text-lg lg:mt-9 lg:max-w-none lg:whitespace-nowrap lg:text-[19px] [animation-delay:120ms]">
           고객사의 비즈니스 특성에 맞춘 물류 운영 설계부터 실행까지, 안정적이고 유연한 물류 서비스를 제공합니다.

@@ -15,20 +15,22 @@ export function Values() {
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionTitle id="values-title" eyebrow="Why LOGEET" title="운영을 넘어, 비용까지 설명하는 물류" oneLine />
 
-        {/* 운영 프로세스와 같은 아이소메트릭 그림 + 번호·항목·설명 */}
-        <ol className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4">
+        {/* 운영 프로세스와 같은 아이소메트릭 그림 + 번호·항목·설명. 모바일은 그림 왼쪽 작게 + 글 오른쪽 */}
+        <ol className="mt-12 grid gap-x-8 gap-y-8 sm:mt-14 sm:grid-cols-2 sm:gap-y-14 lg:mt-16 lg:grid-cols-4">
           {VALUES.map((v, i) => {
             const Art = VALUE_ILLUSTRATIONS[i];
             return (
-              <li key={v.title} className="reveal">
-                <div className="rounded-sm bg-gray px-6 pt-5 pb-3">
+              <li key={v.title} className="reveal flex items-center gap-5 sm:block">
+                <div className="w-32 shrink-0 rounded-sm bg-gray px-2 pt-2 pb-1 sm:w-auto sm:px-6 sm:pt-5 sm:pb-3">
                   <Art />
                 </div>
-                <p className={`mt-6 text-[12px] font-bold tabular-nums tracking-[0.12em] ${i === 0 ? "text-blue" : "text-sub"}`}>
-                  {String(i + 1).padStart(2, "0")}
-                </p>
-                <h3 className="mt-2 text-xl font-bold tracking-tight text-navy">{v.title}</h3>
-                <p className="mt-2 text-[15px] leading-relaxed text-body">{v.desc}</p>
+                <div className="min-w-0">
+                  <p className={`text-[12px] font-bold tabular-nums tracking-[0.12em] sm:mt-6 ${i === 0 ? "text-blue" : "text-sub"}`}>
+                    {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-1 text-lg font-bold tracking-tight text-navy sm:mt-2 sm:text-xl">{v.title}</h3>
+                  <p className="mt-1 text-[14px] leading-relaxed text-body sm:mt-2 sm:text-[15px]">{v.desc}</p>
+                </div>
               </li>
             );
           })}
