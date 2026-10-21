@@ -12,5 +12,5 @@ export const COMPANY = {
   // 홈페이지/kakao 로 들어와도 여기로 넘어간다(next.config.ts) — 명함·문자 안내용 짧은 주소.
   kakaoChatUrl: "https://open.kakao.com/o/sX0QihTi",
   portalUrl: "https://center.logeet.co.kr/login",
-  siteUrl: "https://logeet-homepage.vercel.app", // 정식 도메인이 생기면 여기만 바꾸면 메타데이터·사이트맵이 따라간다
+  siteUrl: "https://www.logeet.co.kr", // 정식 도메인이 생기면 여기만 바꾸면 메타데이터·사이트맵이 따라간다
 } as const;
