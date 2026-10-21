@@ -14,10 +14,8 @@ const CLOSED_HTML = `<!doctype html>
   body{margin:0;min-height:100svh;display:grid;place-items:center;background:#0b1730;color:#fff;
     font-family:Pretendard,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;text-align:center;padding:24px;box-sizing:border-box}
   b{font-size:32px;letter-spacing:-.02em}p{margin:20px 0 0;font-size:17px;color:rgba(255,255,255,.75)}
-  a{color:#7dd3fc;text-decoration:none}small{display:block;margin-top:28px;font-size:14px;color:rgba(255,255,255,.6);line-height:1.8}
 </style></head>
-<body><main><b>LOGEET</b><p>홈페이지를 준비하고 있습니다.</p>
-<small>문의 <a href="tel:${COMPANY.phone}">${COMPANY.phone}</a><br><a href="mailto:${COMPANY.email}">${COMPANY.email}</a></small></main></body></html>`;
+<body><main><b>LOGEET</b><p>홈페이지를 준비하고 있습니다.</p></main></body></html>`;
 
 export function proxy(request: NextRequest) {
   // 로컬 개발·미리보기 배포는 그대로 열어 둔다 (미리보기 배포는 Vercel 로그인으로 보호됨)
