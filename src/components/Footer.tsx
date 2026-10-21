@@ -7,15 +7,14 @@ const INFO: [string, React.ReactNode][] = [
   ["상호", COMPANY.name],
   ["대표", COMPANY.ceo],
   ["사업자등록번호", COMPANY.bizNo],
-  ["업태 / 종목", `${COMPANY.industry} / ${COMPANY.businessType}`],
-  ["본사", COMPANY.address],
-  ["물류센터", COMPANY.centerAddress],
   [
     "TEL",
     <a key="tel" href={`tel:${COMPANY.phone}`} className={link}>
       {COMPANY.phone}
     </a>,
   ],
+  ["본사", COMPANY.address],
+  ["물류센터", COMPANY.centerAddress],
   [
     "Email",
     <a key="mail" href={`mailto:${COMPANY.email}`} className={`${link} break-all`}>
