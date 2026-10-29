@@ -1,17 +1,17 @@
 import { SectionTitle } from "./Services";
 import { VALUE_ILLUSTRATIONS } from "./ValueIllustrations";
 
-// 고객사 시스템에서 실제로 제공 중인 기능을 근거로 한 네 가지 가치
+// 로지트를 고르는 네 가지 이유 — 서로 겹치지 않게 (운영 · 화면 · 비용 · 마감)
 const VALUES = [
-  { title: "비용 투명성", desc: "집행률과 항목별 비용을 숨김없이 보여드립니다." },
-  { title: "운영 가시성", desc: "적재율·재고·출고 현황을 전용 화면에서 확인합니다." },
-  { title: "통합 물류", desc: "보관부터 배송까지 한 흐름으로 연결합니다." },
-  { title: "데이터 기반 관리", desc: "흩어진 운영 데이터를 대시보드와 리포트로 정리합니다." },
+  { title: "통합 운영", desc: "보관·운송·택배를 한 곳에서 운영해 책임이 하나로 모입니다." },
+  { title: "운영 가시성", desc: "적재율·재고·출고를 고객사 전용 화면에서 바로 확인합니다." },
+  { title: "비용 투명성", desc: "운송·택배·보관비를 항목별로 나눠 보여드립니다." },
+  { title: "월간 보고 · 마감", desc: "매월 계획 대비 실적을 보고하고 비용을 확정합니다." },
 ];
 
 export function Values() {
   return (
-    <section aria-labelledby="values-title" className="border-b border-line bg-paper py-24 sm:py-32">
+    <section id="why" aria-labelledby="values-title" className="scroll-mt-16 border-b border-line bg-paper py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionTitle id="values-title" eyebrow="Why LOGEET" title="운영을 넘어, 비용까지 설명하는 물류" oneLine />
 

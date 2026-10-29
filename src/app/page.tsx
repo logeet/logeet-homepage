@@ -4,8 +4,8 @@ import { Values } from "@/components/Values";
 import { Services } from "@/components/Services";
 import { Flow } from "@/components/Flow";
 import { OsTabs } from "@/components/OsTabs";
-import { Company } from "@/components/Company";
 import { QuoteForm } from "@/components/QuoteForm";
+import { Stories } from "@/components/Stories";
 import { Footer } from "@/components/Footer";
 import { FloatingCta } from "@/components/FloatingCta";
 
@@ -19,7 +19,7 @@ export default function Home() {
         <Services />
         <Flow />
         <OsTabs />
-        <Company />
+        <Stories />
         <QuoteForm />
       </main>
       <Footer />

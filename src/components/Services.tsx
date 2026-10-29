@@ -1,7 +1,6 @@
-import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
-import { PHOTOS } from "@/lib/photos";
 import { COMPANY } from "@/lib/company";
+import { ServiceScene, type SceneId } from "./ServiceScene";
 
 export function SectionTitle({
   eyebrow,
@@ -58,8 +57,7 @@ const SERVICES = [
     key: "입고부터 출고까지, 직접 운영",
     title: "풀필먼트",
     lead: "보관·재고·출고를 센터에서 직접 처리합니다.",
-    photo: PHOTOS.fulfillment,
-    alt: "랙에 박스가 적재된 물류센터 내부 (참고 이미지)",
+    alt: "LOGEET 풀필먼트센터에서 랙 보관, 지게차 이동, 컨베이어 검수·패킹이 이루어지는 모습을 그린 그림",
     steps: ["입고", "검수", "보관", "피킹", "패킹", "출고"],
     benefits: [
       "로케이션 단위 보관과 재고 관리",
@@ -72,8 +70,7 @@ const SERVICES = [
     key: "노선별 운송비까지 투명하게",
     title: "임시차 · 지입차 · 간선운송",
     lead: "센터와 매장을 잇는 운송을 운영합니다.",
-    photo: PHOTOS.linehaul,
-    alt: "LOGEET 로고가 들어간 흰색 화물 탑차 (로고를 합성한 참고 이미지)",
+    alt: "LOGEET 물류센터 도크와 도로를 달리는 LOGEET 트럭을 그린 그림",
     steps: ["운송 계획", "차량 배정", "운송", "비용 집계"],
     benefits: [
       "노선·배송 코스별 운송 현황 관리",
@@ -86,8 +83,7 @@ const SERVICES = [
     key: "채널별 택배비를 따로 집계",
     title: "택배 배송",
     lead: "B2B·B2C 택배 발송을 대행합니다.",
-    photo: PHOTOS.parcel,
-    alt: "LOGEET 취급 표시와 라벨이 인쇄된 택배 상자 (로고를 합성한 참고 이미지)",
+    alt: "택배 분류 컨베이어와 B2C·B2B 분류함, LOGEET 박스와 택배 차량을 그린 그림",
     steps: ["출고", "택배 접수", "배송", "B2B·B2C 비용 집계"],
     benefits: ["B2B·B2C 택배 비용 분리 집계", "누적 택배 비용과 물량 추이 확인", "운송비와 합산한 월별 물류비 확인"],
   },
@@ -96,8 +92,7 @@ const SERVICES = [
     key: "예산 대비 집행률을 한 화면에",
     title: "자체 관리 시스템",
     lead: "운영 현황과 비용을 고객사 전용 화면으로 제공합니다.",
-    photo: PHOTOS.system,
-    alt: "지표와 추이 그래프가 표시된 데이터 대시보드 화면 (참고 이미지)",
+    alt: "LOGEET 대형 대시보드 화면과 노트북으로 작업하는 담당자를 그린 그림",
     steps: ["데이터 연동", "대시보드 반영", "월별 리포트"],
     benefits: [
       "예산 대비 집행률과 운송비 합계",
@@ -118,18 +113,11 @@ function Article({ s, className, children }: { s: Service; className: string; ch
   );
 }
 
-/** 서비스 사진 — 네 장 모두 같은 3:2 비율 · 같은 색 보정(채도를 낮추고 네이비 톤을 얹음) */
-function Photo({ s, sizes, className = "" }: { s: Service; sizes: string; className?: string }) {
+/** 서비스 그림 — 네 장 모두 같은 5:4 비율(장면이 꽉 차게), 프로세스 지도와 같은 아이소메트릭 장면이 움직인다 */
+function Photo({ s, className = "" }: { s: Service; className?: string }) {
   return (
-    <div className={`relative aspect-[3/2] overflow-hidden rounded-sm bg-gray ${className}`}>
-      <Image
-        src={s.photo}
-        alt={s.alt}
-        fill
-        sizes={sizes}
-        className="object-cover brightness-[.96] contrast-[1.06] saturate-[.55] transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-      />
-      <div aria-hidden="true" className="absolute inset-0 bg-navy/20 mix-blend-multiply" />
+    <div className={`relative aspect-[5/4] overflow-hidden rounded-sm bg-[linear-gradient(180deg,#f8fafc,#e9eef6)] ring-1 ring-line ${className}`}>
+      <ServiceScene id={s.id as SceneId} label={s.alt} />
     </div>
   );
 }
@@ -226,7 +214,7 @@ export function Services() {
         <div className="mt-16 divide-y divide-line lg:mt-20">
           {/* 01 — 큰 사진 왼쪽, 가로 진행 막대 */}
           <Article s={a} className="grid items-center gap-10 pb-20 lg:grid-cols-12 lg:gap-16 lg:pb-28">
-            <Photo s={a} sizes="(min-width:1024px) 58vw, 100vw" className="lg:col-span-7" />
+            <Photo s={a} className="lg:col-span-7" />
             <div className="lg:col-span-5">
               <Head s={a} i={0} />
               <div className="mt-7">
@@ -244,7 +232,7 @@ export function Services() {
 
           {/* 02 — 01과 같은 구성·같은 사진 크기, 좌우만 반대 */}
           <Article s={b} className="grid items-center gap-10 py-20 lg:grid-cols-12 lg:gap-16 lg:py-28">
-            <Photo s={b} sizes="(min-width:1024px) 58vw, 100vw" className="lg:order-2 lg:col-span-7" />
+            <Photo s={b} className="lg:order-2 lg:col-span-7" />
             <div className="lg:order-1 lg:col-span-5">
               <Head s={b} i={1} />
               <div className="mt-7">
@@ -262,7 +250,7 @@ export function Services() {
 
           {/* 03 — 01과 같은 구성·같은 사진 크기 */}
           <Article s={c} className="grid items-center gap-10 py-20 lg:grid-cols-12 lg:gap-16 lg:py-28">
-            <Photo s={c} sizes="(min-width:1024px) 58vw, 100vw" className="lg:col-span-7" />
+            <Photo s={c} className="lg:col-span-7" />
             <div className="lg:col-span-5">
               <Head s={c} i={2} />
               <div className="mt-7">
@@ -280,7 +268,7 @@ export function Services() {
 
           {/* 04 — 01과 같은 구성·같은 사진 크기, 좌우만 반대 */}
           <Article s={d} className="grid items-center gap-10 pt-20 lg:grid-cols-12 lg:gap-16 lg:pt-28">
-            <Photo s={d} sizes="(min-width:1024px) 58vw, 100vw" className="lg:order-2 lg:col-span-7" />
+            <Photo s={d} className="lg:order-2 lg:col-span-7" />
             <div className="lg:order-1 lg:col-span-5">
               <Head s={d} i={3} />
               <div className="mt-7">
@@ -296,7 +284,7 @@ export function Services() {
             </div>
           </Article>
         </div>
-        <p className="mt-12 text-[13px] text-sub">서비스 이미지는 이해를 돕기 위한 참고 이미지이며 실제 로지트 시설과 다를 수 있습니다.</p>
+        <p className="mt-12 text-[13px] text-sub">서비스 그림은 이해를 돕기 위한 예시이며 실제 로지트 시설과 다를 수 있습니다.</p>
       </div>
     </section>
   );

@@ -71,7 +71,7 @@ function Integrated() {
 /** 데이터 기반 관리 — 서버 · 대시보드 화면 · 시트 데이터 */
 function Data() {
   return (
-    <Frame label="서버와 시트 데이터, 대시보드 화면 그림">
+    <Frame label="데이터가 모여 월간 리포트로 정리되는 그림">
       {[0, 1.5, 3].map((z) => (
         <g key={z}>
           <Cube x={1} y={1} z={z} w={2.6} d={2.6} h={1.35} c={SERVER} />
@@ -100,4 +100,4 @@ function Data() {
   );
 }
 
-export const VALUE_ILLUSTRATIONS = [Cost, Visibility, Integrated, Data];
+export const VALUE_ILLUSTRATIONS = [Integrated, Visibility, Cost, Data];

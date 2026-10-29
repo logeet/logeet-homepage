@@ -7,7 +7,7 @@ import { Logo } from "./Logo";
 
 // 한 페이지 구성 — 모든 항목은 page.tsx 안의 실제 섹션 id로 연결된다.
 const NAV = [
-  { href: "#company", label: "회사 소개" },
+  { href: "#why", label: "회사 소개" },
   { href: "#fulfillment", label: "풀필먼트" },
   { href: "#transport", label: "운송 서비스" },
   { href: "#parcel", label: "택배 서비스" },

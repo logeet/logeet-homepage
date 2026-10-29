@@ -4,7 +4,7 @@
  */
 
 export const U = 12; // 격자 1칸 = 12px
-const C = Math.cos(Math.PI / 6);
+export const C = Math.cos(Math.PI / 6); // 아이소메트릭 기울기
 export const OX = 120;
 export const OY = 150;
 
