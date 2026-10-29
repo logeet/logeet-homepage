@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/icon.svg">
+<title>LOGEET 3D 재고 관제 (예시)</title>
+<style>
+  :root{--panel:rgba(11,23,48,.86);--line:rgba(255,255,255,.14);--txt:#eef3fb;--mut:#9fb1c8;--red:#ff5a63;--ok:#38c690}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#dfe7f1;color:var(--txt);
+    font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;font-size:13px}
+  #stage{position:absolute;inset:0}
+  .panel{position:absolute;z-index:2;background:var(--panel);border:1px solid var(--line);border-radius:12px;backdrop-filter:blur(8px)}
+  #top{left:12px;right:12px;top:12px;display:flex;align-items:center;gap:12px;padding:8px 12px;flex-wrap:wrap}
+  .ttl{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:800;white-space:nowrap}
+  .ttl small{font-size:11px;font-weight:600;color:var(--mut)}
+  .live{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;color:#bbf7d0;background:rgba(56,198,144,.18);border:1px solid rgba(56,198,144,.4);padding:2px 8px;border-radius:999px}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .kpis{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .k{padding:4px 11px;border-radius:8px;background:rgba(255,255,255,.07);min-width:88px}
+  .k span{display:block;font-size:11px;color:var(--mut)}
+  .k b{font-size:16px;font-variant-numeric:tabular-nums;transition:color .4s}
+  .k.bad b{color:var(--red)}
+  .k b.bump{color:#93c5fd}
+  #low{left:12px;top:76px;width:224px;padding:10px 12px}
+  #flow{left:12px;bottom:12px;width:224px;padding:10px 12px}
+  #log{right:12px;bottom:12px;width:300px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+  h4{margin:0 0 6px;font-size:11.5px;color:var(--mut);font-weight:600}
+  #low ul,#flow ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+  #low li{display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:5px 8px;border-radius:7px;background:rgba(255,90,99,.15);border:1px solid rgba(255,90,99,.35)}
+  #low li b{font-variant-numeric:tabular-nums}
+  #low li small{color:var(--mut)}
+  #flow li{display:flex;align-items:center;gap:8px;font-size:12px;color:#cbd5e1;padding:2px 0;transition:color .3s}
+  #flow li i{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;font-style:normal;font-size:10.5px;font-weight:800;background:rgba(96,165,250,.18);color:#93c5fd;transition:background .3s,color .3s}
+  #flow li.on{color:#fff} #flow li.on i{background:#3b82f6;color:#fff}
+  #log div{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cbd5e1;animation:in .4s ease-out}
+  #log time{color:#7d90a8;margin-right:6px;font-variant-numeric:tabular-nums}
+  #log .in b{color:var(--ok)} #log .out b{color:#fbbf24} #log .low b{color:var(--red)} #log .sort b{color:#93c5fd}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}}
+  .lbl{font-size:12px;font-weight:800;color:#fff;background:#0b1730;border:1px solid rgba(255,255,255,.25);padding:4px 10px;border-radius:7px;white-space:nowrap;box-shadow:0 4px 10px rgba(11,23,48,.25)}
+  .lbl b{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;margin-right:6px;border-radius:50%;background:#3b82f6;color:#fff;font-size:10.5px}
+  .store{font-size:10.5px;font-weight:800;color:#0b1730;background:rgba(255,255,255,.95);border:1px solid #cbd5e1;padding:2px 7px;border-radius:999px;white-space:nowrap}
+  .badge span{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:var(--red);padding:2px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.25);animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+  #err{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:#0b1730;padding:20px}
+  @media (max-width:760px){
+    #low,#log,#flow{display:none}
+    #top{left:8px;right:8px;top:8px;padding:6px 10px}
+    .ttl small{display:none}
+    .kpis .k:nth-child(n+4){display:none}
+    .k{min-width:0}
+    .lbl{font-size:10px;padding:2px 6px}
+    .store{font-size:9px;padding:1px 5px}
+    .badge span{font-size:9px;padding:1px 4px}
+  }
+  /* 홈페이지 안 낮은 틀: 미달 목록은 3D 위 빨간 표시로 대신하고 작업 흐름만 */
+  @media (max-height:760px) and (min-width:761px){
+    #low{display:none}
+    #flow{top:76px;bottom:auto}
+  }
+  @media (prefers-reduced-motion:reduce){.live i,.badge span{animation:none}}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<div id="stage"></div>
+<div id="top" class="panel">
+  <div class="ttl">LOGEET 3D 재고 관제 <small>WMS 디지털 트윈</small><span class="live"><i></i>LIVE</span></div>
+  <div class="kpis">
+    <div class="k"><span>총 재고</span><b id="kStock">-</b></div>
+    <div class="k bad"><span>안전재고 미달</span><b id="kLow">-</b></div>
+    <div class="k"><span>오늘 분류</span><b id="kSort">-</b></div>
+    <div class="k"><span>오늘 입고</span><b id="kIn">-</b></div>
+    <div class="k"><span>오늘 출고</span><b id="kOut">-</b></div>
+  </div>
+</div>
+<div id="low" class="panel"><h4>안전재고 미달 로케이션</h4><ul id="lowList"></ul></div>
+<div id="flow" class="panel"><h4>작업 흐름</h4><ol id="flowList"></ol></div>
+<div id="log" class="panel"><h4>최근 처리</h4></div>
+<div id="err"><div><b>3D 화면을 불러오지 못했습니다.</b><br>인터넷 연결과 WebGL 지원 여부를 확인해 주세요.</div></div>
+
+<script>setTimeout(function () { if (!window.__ok) document.getElementById("err").style.display = "flex"; }, 9000);</script>
+<script type="module">
+/*
+ * LOGEET 3D 재고 관제 — 홈페이지용 예시 화면(디지털 트윈 스타일). 모든 수치는 무작위 예시 데이터.
+ * 유통센터 작업 흐름을 한 방향으로 배치:
+ *   입고·검수(오른쪽 앞) → ① 재고보관(뒤쪽 전체: 자동창고 AS/RS + 팔레트랙) → ② DPS 피킹(랙 바로 앞) → ③ DAS · ④ PAS 분배(같은 줄 왼쪽)
+ *   → ⑤ 크로스벨트 Sorter(가운데, 순환) → 매장별 Chute(양쪽) → ⑥ 매장집결(롤테이너)
+ *   → ⑦ 출하대기 → ⑧ 상차(왼쪽 앞 도크, 트럭 3대)
+ * 좌표: x 오른쪽, z 화면 앞쪽, y 위.
+ */
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const stage = document.getElementById("stage");
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const labels = new CSS2DRenderer();
+labels.domElement.style.cssText = "position:absolute;inset:0;pointer-events:none";
+stage.appendChild(labels.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xdfe7f1);
+scene.fog = new THREE.Fog(0xdfe7f1, 140, 240);
+const camera = new THREE.PerspectiveCamera(34, 1, 0.5, 500);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(-4, 0, 3);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI / 2 - 0.1;
+controls.minDistance = 20;
+controls.maxDistance = 150;
+controls.autoRotate = !reduce;
+controls.autoRotateSpeed = 0.3;
+controls.addEventListener("start", () => (controls.autoRotate = false));
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb8c4d6, 1.15));
+const sun = new THREE.DirectionalLight(0xffffff, 1.55);
+sun.position.set(30, 55, 26);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -55, right: 55, top: 50, bottom: -50, far: 170 });
+scene.add(sun);
+
+/* ───────── 부품 ───────── */
+const M = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.75, metalness: 0.05, ...o });
+const mat = {
+  floor: M(0xf4f6f9), apron: M(0xdde4ee), lane: M(0xfacc15), wall: M(0xeef2f7),
+  blue: M(0x1d4ed8, { metalness: 0.3, roughness: 0.5 }), beam: M(0xf97316, { metalness: 0.3, roughness: 0.5 }),
+  wood: M(0xc8a06a), box: M(0xd9ae74), box2: M(0xc99556), steel: M(0xb8c2d0, { metalness: 0.6, roughness: 0.35 }),
+  dark: M(0x334155), belt: M(0x1e293b), white: M(0xffffff), glass: M(0x93c5fd, { metalness: 0.2, roughness: 0.2 }),
+  yellow: M(0xfacc15), vest: M(0xf97316), skin: M(0xf1c9a0), tire: M(0x1e293b), tray: M(0xe2e8f0, { metalness: 0.4, roughness: 0.4 }),
+  green: M(0x22c55e, { emissive: 0x16a34a, emissiveIntensity: 0.8 }),
+};
+const TOTE = [M(0x2563eb), M(0x64748b), M(0x0d9488)];
+function box(w, h, d, m, x, y, z, parent = scene, shadow = true) {
+  const g = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+  g.position.set(x, y, z);
+  g.castShadow = shadow;
+  g.receiveShadow = true;
+  parent.add(g);
+  return g;
+}
+function textTex(lines, w = 1024, h = 256) {
+  const c = document.createElement("canvas");
+  c.width = w; c.height = h;
+  const x = c.getContext("2d");
+  for (const [t, size, color, y, weight = 900] of lines) {
+    x.fillStyle = color;
+    x.font = `${weight} ${size}px Pretendard, "Malgun Gothic", sans-serif`;
+    x.textBaseline = "middle";
+    x.textAlign = "center"; // 간판·트럭 글자 모두 가운데 정렬
+    x.fillText(t, w / 2, y);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  return tex;
+}
+// 3D 위 글자 라벨은 쓰지 않음(화면이 지저분해짐) — 구역 이름은 왼쪽 '작업 흐름' 목록에만
+function label() {}
+let seed = 20261029;
+const rand = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+const pick = (a) => a[Math.floor(rand() * a.length)];
+// 디지털 표시기(DPS·DAS·PAS·Chute) — 작업이 생기면 켜진다
+const lights = [];
+function lamp(x, y, z, parent = scene) {
+  box(0.56, 0.24, 0.08, mat.dark, x, y, z, parent, false);
+  const m = new THREE.MeshStandardMaterial({ color: 0x1e293b, emissive: 0x000000, emissiveIntensity: 2.4 });
+  const l = box(0.24, 0.16, 0.05, m, x + 0.1, y, z + 0.05, parent, false);
+  lights.push(l);
+  return l;
+}
+// 구역 바닥 색 — 디지털 트윈처럼 구역을 면으로 구분
+function zone(x0, z0, x1, z1, color) {
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, z1 - z0), new THREE.MeshStandardMaterial({ color, transparent: true, opacity: 0.55, roughness: 1 }));
+  m.rotation.x = -Math.PI / 2;
+  m.position.set((x0 + x1) / 2, 0.012, (z0 + z1) / 2);
+  m.receiveShadow = true;
+  scene.add(m);
+  const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(x1 - x0, z1 - z0)), new THREE.LineBasicMaterial({ color: 0x94a3b8 }));
+  edge.rotation.x = -Math.PI / 2;
+  edge.position.set((x0 + x1) / 2, 0.02, (z0 + z1) / 2);
+  scene.add(edge);
+}
+
+/* ───────── 바닥 · 벽 · 간판 · 구역 ───────── */
+box(84, 0.2, 66, mat.floor, -3, -0.1, 3, scene, false).castShadow = false;
+box(84, 12, 0.4, mat.wall, -3, 6, -30);
+box(0.4, 12, 66, mat.wall, -44, 6, 3);
+const sign = new THREE.Mesh(
+  new THREE.PlaneGeometry(26, 6.5),
+  new THREE.MeshStandardMaterial({ map: textTex([["LOGEET", 150, "#0b1730", 108], ["SMART DC · 3D 재고 관제", 46, "#1d4ed8", 205, 800]]), transparent: true, roughness: 0.9 })
+);
+sign.position.set(-3, 8.4, -29.76); // 뒷벽(x -45 ~ 39) 가운데
+scene.add(sign);
+box(84, 0.5, 0.06, mat.blue, -3, 11.4, -29.76, scene, false);
+
+zone(-42, -28, 34, -8, 0xdbeafe);  // 재고보관 (자동창고 + 팔레트랙)
+zone(8, 8.5, 36, 20.5, 0xffedd5);  // 입고·검수
+zone(9, -4.6, 34, 1.2, 0xdcfce7); // ② DPS
+zone(1, -4.6, 9, 1.2, 0xede9fe);  // ③ DAS
+zone(-8.5, -4.6, 1, 1.2, 0xf3e8ff); // ④ PAS
+zone(-29, 5.2, 3, 12.8, 0xfef3c7); // ⑤ Sorter
+zone(-24, 0.8, -3, 3.2, 0xccfbf1); // ⑥ 매장집결(뒤)
+zone(-24, 15.4, -3, 18, 0xccfbf1); // ⑥ 매장집결(앞)
+zone(-42, 18.8, -3, 22.4, 0xe0f2fe); // ⑦ 출하대기
+box(42, 0.02, 12, mat.apron, -23, 0.01, 29, scene, false); // ⑧ 상차 도크 바닥
+
+/* ───────── ① 재고보관존 — 팔레트랙 4열 × 8베이 × 3단 (지게차 통로) ───────── */
+const PALLET_ITEMS = ["생활용품 박스", "화장품 박스", "의류 박스", "식품 박스", "잡화 박스", "건강식품 박스"];
+const PICK_ITEMS = ["립스틱", "스킨케어", "마스크팩", "양말", "액세서리", "건강식품", "향수"];
+const locs = [];
+const ROWS = [["A", -24.5], ["B", -20], ["C", -15.5], ["D", -11]];
+const BAY_W = 2.8, LV_H = 1.75, LEVELS = 3, BAYS = 13, RX0 = -4, RD = 1.3; // 자동창고와 5:5 너비
+for (const [rid, z] of ROWS) {
+  for (let b = 0; b <= BAYS; b++) {
+    const x = RX0 + b * BAY_W, h = LEVELS * LV_H + 0.3;
+    box(0.14, h, 0.14, mat.blue, x, h / 2, z - RD / 2);
+    box(0.14, h, 0.14, mat.blue, x, h / 2, z + RD / 2);
+  }
+  for (let l = 0; l < LEVELS; l++) {
+    const y = l * LV_H + 0.15;
+    box(BAYS * BAY_W, 0.12, 0.1, mat.beam, RX0 + (BAYS * BAY_W) / 2, y, z - RD / 2);
+    box(BAYS * BAY_W, 0.12, 0.1, mat.beam, RX0 + (BAYS * BAY_W) / 2, y, z + RD / 2);
+    for (let b = 0; b < BAYS; b++) {
+      const cx = RX0 + b * BAY_W + BAY_W / 2;
+      const g = new THREE.Group();
+      g.position.set(cx, y + 0.06, z);
+      scene.add(g);
+      box(BAY_W - 0.45, 0.14, RD - 0.12, mat.wood, 0, 0.07, 0, g);
+      const parts = [[-0.62, 0.52], [0.62, 0.52], [-0.62, 1.27], [0.62, 1.27]].map(([px, py], i) => box(1.1, 0.74, RD - 0.3, i % 2 ? mat.box2 : mat.box, px, py, 0, g));
+      locs.push({ id: `${rid}-${String(b + 1).padStart(2, "0")}-${l + 1}`, item: pick(PALLET_ITEMS), cap: 240, safe: 60, qty: 0, parts, pos: new THREE.Vector3(cx, y + 1.85, z) });
+    }
+  }
+}
+for (const z of [-22.25, -17.75, -13.25, -6.6]) box(38, 0.02, 0.16, mat.lane, 14.2, 0.02, z, scene, false);
+
+/* ───────── 자동창고(AS/RS) — 왼쪽 뒤, 스태커 크레인이 오가며 입출고 ───────── */
+function cellTex() {
+  const c = document.createElement("canvas");
+  c.width = 1024; c.height = 256;
+  const x = c.getContext("2d");
+  x.fillStyle = "#cbd5e1"; x.fillRect(0, 0, 1024, 256);
+  for (let i = 0; i < 32; i++) for (let j = 0; j < 8; j++) { // 블록 길이 34에 32칸
+    x.fillStyle = rand() < 0.82 ? pick(["#d9ae74", "#c99556", "#2563eb", "#64748b"]) : "#94a3b8";
+    x.fillRect(i * 32 + 3, j * 32 + 3, 26, 26);
+  }
+  x.strokeStyle = "#1d4ed8"; x.lineWidth = 3;
+  for (let i = 0; i <= 32; i++) { x.beginPath(); x.moveTo(i * 32, 0); x.lineTo(i * 32, 256); x.stroke(); }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+const ASRS_X0 = -40, ASRS_LEN = 34, ASRS_H = 7; // 팔레트랙과 5:5 너비
+const cranes = [];
+for (const az of [-23.5, -14]) {
+  for (const dz of [-1.7, 1.7]) {
+    const tex = cellTex();
+    const side = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.8 });
+    const blk = new THREE.Mesh(new THREE.BoxGeometry(ASRS_LEN, ASRS_H, 2), [mat.steel, mat.steel, mat.steel, mat.steel, side, side]);
+    blk.position.set(ASRS_X0 + ASRS_LEN / 2, ASRS_H / 2, az + dz);
+    blk.castShadow = true; blk.receiveShadow = true;
+    scene.add(blk);
+  }
+  box(ASRS_LEN, 0.1, 0.3, mat.dark, ASRS_X0 + ASRS_LEN / 2, 0.05, az, scene, false);
+  box(ASRS_LEN, 0.1, 0.3, mat.dark, ASRS_X0 + ASRS_LEN / 2, ASRS_H + 0.1, az, scene, false);
+  const crane = new THREE.Group();
+  box(0.4, ASRS_H, 0.4, mat.yellow, 0, ASRS_H / 2, 0, crane);
+  const car = new THREE.Group();
+  box(1.2, 0.3, 1.2, mat.dark, 0, 0, 0, car);
+  box(0.9, 0.6, 0.9, mat.box, 0, 0.45, 0, car);
+  crane.add(car);
+  crane.position.set(ASRS_X0 + 4, 0, az);
+  scene.add(crane);
+  cranes.push({ crane, car, ph: rand() * 6 });
+}
+
+/* ───────── 입고·검수존 — 오른쪽 앞: 입고 트럭 → 검수 대기 팔레트 → 이동 통로로 재고보관존 ───────── */
+for (let i = 0; i < 6; i++) for (let j = 0; j < 3; j++) {
+  const x = 11 + i * 3.8, z = 10.5 + j * 3.2;
+  box(2.4, 0.15, 2.4, mat.wood, x, 0.08, z);
+  box(1.1, 0.8, 1.1, mat.box, x - 0.55, 0.55, z - 0.55);
+  box(1.1, 0.8, 1.1, mat.box2, x + 0.55, 0.55, z - 0.55);
+  if ((i + j) % 2) box(1.1, 0.8, 1.1, mat.box, x - 0.55, 0.55, z + 0.55);
+  if ((i * j) % 3 !== 1) box(1.1, 0.8, 1.1, mat.box2, x + 0.55, 0.55, z + 0.55);
+}
+for (const x of [12, 20, 28]) box(3.6, 0.5, 0.3, mat.yellow, x, 0.25, 23.2);
+
+/* ───────── ② DPS 피킹존 — 랙 바로 앞 플로우랙(앞을 봄) + 표시기 ───────── */
+const DPS_Z = -3, DPS_X0 = 10.3, DPS_BAYS = 7, DPS_W = 3.1;
+for (let b = 0; b <= DPS_BAYS; b++) {
+  box(0.12, 2.7, 0.12, mat.steel, DPS_X0 + b * DPS_W, 1.35, DPS_Z - 0.6);
+  box(0.12, 2.7, 0.12, mat.steel, DPS_X0 + b * DPS_W, 1.35, DPS_Z + 0.6);
+}
+for (let t = 0; t < 3; t++) {
+  const y = 0.45 + t * 0.75;
+  for (let b = 0; b < DPS_BAYS; b++) {
+    const cx = DPS_X0 + b * DPS_W + DPS_W / 2;
+    const shelf = new THREE.Group();
+    shelf.position.set(cx, y, DPS_Z);
+    shelf.rotation.x = 0.12; // 앞(작업자 쪽)으로 기운 플로우랙
+    scene.add(shelf);
+    box(2.9, 0.05, 1.2, mat.steel, 0, 0, 0, shelf, false);
+    const parts = [-0.95, 0, 0.95].map((dx, k) => box(0.82, 0.42, 1.0, TOTE[(b + k + t) % 3], dx, 0.24, 0, shelf));
+    lamp(cx - 0.3, y + 0.05, DPS_Z + 0.68);
+    locs.push({ id: `DPS-${String(b + 1).padStart(2, "0")}-${t + 1}`, item: pick(PICK_ITEMS), cap: 30, safe: 8, qty: 0, parts, pos: new THREE.Vector3(cx, y + 0.9, DPS_Z) });
+  }
+}
+
+/* ───────── ③ DAS 분배존 — 점포별 Put Wall (칸마다 표시기) ───────── */
+const DAS_X0 = 1.5, DAS_COLS = 5;
+for (let c = 0; c <= DAS_COLS; c++) box(0.08, 3.3, 1.1, mat.steel, DAS_X0 + c * 1.5, 1.65, DPS_Z);
+for (let r = 0; r <= 4; r++) box(DAS_COLS * 1.5, 0.06, 1.1, mat.steel, DAS_X0 + (DAS_COLS * 1.5) / 2, 0.15 + r * 0.8, DPS_Z, scene, false);
+for (let c = 0; c < DAS_COLS; c++) for (let r = 0; r < 4; r++) {
+  const x = DAS_X0 + c * 1.5 + 0.75, y = 0.15 + r * 0.8;
+  if (rand() < 0.75) box(1.0, 0.5, 0.8, TOTE[(c + r) % 3], x, y + 0.28, DPS_Z);
+  lamp(x - 0.2, y + 0.68, DPS_Z + 0.58);
+}
+
+/* ───────── ④ PAS 분배존 — 자동 분배 설비 (투입 벨트 + 점포별 배출구 + 상태 표시등) ───────── */
+const PAS_X0 = -7.5, PAS_X1 = 0.2;
+box(PAS_X1 - PAS_X0, 1.0, 2.2, mat.dark, (PAS_X0 + PAS_X1) / 2, 0.5, DPS_Z);
+box(PAS_X1 - PAS_X0, 0.08, 1.0, mat.belt, (PAS_X0 + PAS_X1) / 2, 1.05, DPS_Z - 0.4, scene, false);
+box(PAS_X1 - PAS_X0, 0.6, 0.06, mat.blue, (PAS_X0 + PAS_X1) / 2, 1.3, DPS_Z - 0.95, scene, false);
+for (let i = 0; i < 8; i++) {
+  const x = PAS_X0 + 0.55 + i * 0.95;
+  box(0.8, 0.45, 0.6, TOTE[i % 3], x, 1.25, DPS_Z + 0.75);
+  lamp(x - 0.2, 1.7, DPS_Z + 1.12);
+}
+const pasBoxes = Array.from({ length: 4 }, (_, i) => box(0.6, 0.4, 0.6, mat.box, PAS_X0 + 0.5 + i * 2, 1.3, DPS_Z - 0.4));
+box(0.16, 1.8, 0.16, mat.dark, PAS_X0 + 0.2, 1.9, DPS_Z - 0.9);
+const tower = box(0.3, 0.3, 0.3, mat.green, PAS_X0 + 0.2, 2.9, DPS_Z - 0.9, scene, false);
+
+/* ───────── 이송 컨베이어 — DPS → DAS · PAS 앞 → Sorter 투입 ───────── */
+const CONV = [[33, 0.2], [-8.6, 0.2], [-8.6, 5.6]];
+function convSeg([x0, z0], [x1, z1]) {
+  const len = Math.hypot(x1 - x0, z1 - z0), along = x0 !== x1;
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2;
+  box(along ? len + 1.2 : 1.2, 0.12, along ? 1.2 : len + 1.2, mat.belt, cx, 0.9, cz);
+  for (const s of [-0.66, 0.66]) box(along ? len + 1.2 : 0.08, 0.3, along ? 0.08 : len + 1.2, mat.blue, cx + (along ? 0 : s), 0.85, cz + (along ? s : 0), scene, false);
+  for (let t = 0; t <= len; t += 3) {
+    const x = x0 + ((x1 - x0) * t) / len, z = z0 + ((z1 - z0) * t) / len;
+    box(0.12, 0.8, 0.12, mat.steel, x + (along ? 0 : -0.5), 0.4, z + (along ? -0.5 : 0), scene, false);
+    box(0.12, 0.8, 0.12, mat.steel, x + (along ? 0 : 0.5), 0.4, z + (along ? 0.5 : 0), scene, false);
+  }
+}
+for (let i = 0; i < CONV.length - 1; i++) convSeg(CONV[i], CONV[i + 1]);
+const convLen = CONV.slice(1).reduce((s, p, i) => s + Math.hypot(p[0] - CONV[i][0], p[1] - CONV[i][1]), 0);
+function convPos(d) {
+  for (let i = 0; i < CONV.length - 1; i++) {
+    const [x0, z0] = CONV[i], [x1, z1] = CONV[i + 1], len = Math.hypot(x1 - x0, z1 - z0);
+    if (d <= len) return [x0 + ((x1 - x0) * d) / len, z0 + ((z1 - z0) * d) / len];
+    d -= len;
+  }
+  return CONV[CONV.length - 1];
+}
+const convItems = Array.from({ length: 14 }, (_, i) => ({ d: (i / 14) * convLen, m: box(0.8, 0.5, 0.8, TOTE[i % 3], 0, 1.21, 0) }));
+
+/* ───────── ⑤ Sorter 자동분류존 — 크로스벨트 순환 + 양쪽 매장별 Chute ───────── */
+const LX0 = -24, LX1 = -2, LZB = 6.6, LZF = 11.4, LR = (LZF - LZB) / 2, LZC = (LZB + LZF) / 2;
+const STR = LX1 - LX0, ARC = Math.PI * LR, LOOP = 2 * STR + 2 * ARC;
+function loopPos(s) {
+  s = ((s % LOOP) + LOOP) % LOOP;
+  if (s < STR) return [LX1 - s, LZB];                                   // 뒤쪽 직선(-x 방향)
+  s -= STR; if (s < ARC) { const a = s / LR; return [LX0 - Math.sin(a) * LR, LZC - Math.cos(a) * LR]; }
+  s -= ARC; if (s < STR) return [LX0 + s, LZF];                          // 앞쪽 직선(+x 방향)
+  s -= STR; const a = s / LR; return [LX1 + Math.sin(a) * LR, LZC + Math.cos(a) * LR];
+}
+for (let s = 0; s < LOOP; s += 0.9) {
+  const [x, z] = loopPos(s), [x2, z2] = loopPos(s + 0.9);
+  const seg = box(1.0, 0.12, 1.5, mat.belt, (x + x2) / 2, 0.9, (z + z2) / 2, scene, false);
+  seg.rotation.y = Math.atan2(x2 - x, z2 - z) + Math.PI / 2;
+}
+for (let x = LX0; x <= LX1; x += 3) for (const z of [LZB, LZF]) box(0.14, 0.85, 0.14, mat.steel, x, 0.42, z, scene, false);
+const CHUTE_X = [-22, -18, -14, -10.6, -5];
+const STORES_F = ["강남점", "잠실점", "분당점", "송파점", "수원점"];
+const STORES_B = ["판교점", "하남점", "일산점", "용인점", "인천점"];
+const cageMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.35, metalness: 0.5, roughness: 0.4 });
+const chutes = [];
+for (const [side, stores] of [[-1, STORES_B], [1, STORES_F]]) {
+  CHUTE_X.forEach((cx, i) => {
+    const z0 = side < 0 ? LZB - 0.75 : LZF + 0.75;          // 루프 가장자리
+    const zc = z0 + side * 1.4;
+    const ch = new THREE.Group();
+    ch.position.set(cx, 0.72, zc);
+    ch.rotation.x = side * 0.2; // 바깥쪽으로 내려가는 슈트
+    scene.add(ch);
+    box(1.1, 0.06, 2.8, mat.steel, 0, 0, 0, ch, false);
+    box(0.06, 0.2, 2.8, mat.steel, -0.55, 0.12, 0, ch, false);
+    box(0.06, 0.2, 2.8, mat.steel, 0.55, 0.12, 0, ch, false);
+    const cageZ = z0 + side * 3.8;
+    box(1.4, 1.6, 1.4, cageMat, cx, 0.8, cageZ, scene, false);
+    box(0.8, 0.55, 0.8, mat.box, cx - 0.2, 0.3, cageZ - 0.1);
+    lamp(cx - 0.3, 1.45, z0 + side * 0.2);
+    label(stores[i], "store", cx, 2.2, cageZ);
+    chutes.push({ x: cx, side, cageZ, store: stores[i] });
+  });
+}
+
+/* ───────── ⑦ 출하대기존 · ⑧ 상차존 ───────── */
+for (let i = 0; i < 10; i++) {
+  const x = -40 + i * 3.6, z = 20.6;
+  box(1.4, 1.6, 1.4, cageMat, x, 0.8, z, scene, false);
+  box(1.0, 0.6, 1.0, i % 2 ? mat.box : mat.box2, x, 0.32, z);
+  box(0.9, 0.5, 0.9, mat.box2, x, 0.9, z);
+}
+for (const x of [-38, -30, -22]) box(3.6, 0.5, 0.3, mat.yellow, x, 0.25, 23.2); // 도크 범퍼
+for (const x of [-16.5, -12, -7.5, -3]) box(2.4, 0.4, 0.3, mat.yellow, x, 0.2, 23.2); // 소형차 도크 범퍼
+const truckTex = textTex([["LOGEET", 170, "#0b1730", 120]], 1024, 256);
+function makeTruck() {
+  const t = new THREE.Group();
+  box(3.2, 3.3, 9, mat.white, 0, 2.25, 0, t);
+  box(3.22, 0.35, 9.02, mat.blue, 0, 1.4, 0, t, false);
+  const side = new THREE.Mesh(new THREE.PlaneGeometry(6.5, 1.6), new THREE.MeshBasicMaterial({ map: truckTex, transparent: true }));
+  side.position.set(1.62, 2.7, 0); side.rotation.y = Math.PI / 2; t.add(side);
+  const side2 = side.clone(); side2.position.x = -1.62; side2.rotation.y = -Math.PI / 2; t.add(side2);
+  box(3, 2.7, 2.4, mat.white, 0, 1.9, 5.8, t);
+  box(2.8, 1, 0.1, mat.glass, 0, 2.6, 7.02, t, false);
+  for (const [x, z] of [[-1.5, -3], [1.5, -3], [-1.5, 5.8], [1.5, 5.8], [-1.5, -1.6], [1.5, -1.6]]) {
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16), mat.tire);
+    w.rotation.z = Math.PI / 2; w.position.set(x, 0.5, z); w.castShadow = true; t.add(w);
+  }
+  scene.add(t);
+  return t;
+}
+const trucks = [-38, -30, -22, 12, 20, 28].map((x) => { const t = makeTruck(); t.position.set(x, 0, 28.2); return t; });
+// 매장 배송용 소형 탑차 4대
+const vans = [-16.5, -12, -7.5, -3].map((x) => { const t = makeTruck(); t.scale.setScalar(0.6); t.position.set(x, 0, 26.4); return t; });
+// 모든 차량이 제각각 무작위로 출차했다가 돌아옴 — 대기(0) → 출차(1) → 외부(2) → 진입(3)
+// 바닥 끝을 넘으며 서서히 투명해져 사라짐(허공에 떠 보이지 않게). 차마다 재질을 따로 둬야 하나씩 흐려짐
+const fleet = [...trucks, ...vans].map((t) => {
+  t.traverse((o) => { if (o.isMesh) { o.material = o.material.clone(); o.material.transparent = true; } });
+  return { t, home: t.position.z, state: 0, k: 0, o: 1, timer: 1 + rand() * 20 };
+});
+function fade(f) {
+  const k = Math.max(0, Math.min(1, (f.t.position.z - f.home - 1) / 7.5));
+  const o = 1 - k * k * (3 - 2 * k); // 부드럽게(시작·끝이 완만한 곡선) 흐려짐
+  if (o === f.o) return;
+  f.o = o;
+  f.t.visible = o > 0.01;
+  f.t.traverse((m) => { if (m.isMesh) { m.material.opacity = o; m.material.depthWrite = o > 0.99; m.castShadow = o > 0.5; } });
+}
+function stepFleet(dt) {
+  for (const f of fleet) {
+    f.timer -= dt;
+    if (f.state === 0 && f.timer <= 0) {
+      // 한꺼번에 비지 않게 — 나가 있는 차는 최대 4대
+      if (fleet.filter((g) => g.state !== 0).length < 4) { f.state = 1; f.k = 0; } else f.timer = 2 + rand() * 4;
+    }
+    else if (f.state === 1) {
+      f.k = Math.min(1, f.k + dt / 8);
+      f.t.position.z = f.home + f.k ** 2 * 10;            // 천천히 출발하며 서서히 사라짐
+      if (f.k >= 1) { f.state = 2; f.timer = 2 + rand() * 5; }
+    } else if (f.state === 2 && f.timer <= 0) { f.state = 3; f.k = 0; }
+    else if (f.state === 3) {
+      f.k = Math.min(1, f.k + dt / 9);
+      f.t.position.z = f.home + (1 - f.k) ** 2 * 10;      // 서서히 나타나며 도크에 천천히 붙음
+      if (f.k >= 1) { f.state = 0; f.timer = 6 + rand() * 14; }
+    }
+    fade(f);
+  }
+}
+box(28, 0.02, 12, mat.apron, 20, 0.01, 29, scene, false); // 입고 도크 바닥
+
+/* ───────── 구역 라벨 ───────── */
+const ZONES = ["입고·검수존", "재고보관존", "DPS 피킹존", "DAS 분배존", "PAS 분배존", "Sorter 자동분류존", "매장집결존", "출하대기존", "상차존"];
+const N = (i) => `<b>${i + 1}</b>${ZONES[i]}`;
+label(N(0), "lbl", 21, 2.6, 14);
+label(N(1), "lbl", -2, 8.2, -18.75);
+label(N(2), "lbl", 21.4, 3.6, -3);
+label(N(3), "lbl", 5.2, 4.3, -3);
+label(N(4), "lbl", -3.6, 3.6, -3);
+label(N(5), "lbl", -13, 3.4, LZC);
+label(N(6), "lbl", -13.5, 2.9, 16.7);
+label(N(7), "lbl", -26, 2.7, 20.6);
+label(N(8), "lbl", -30, 5.6, 27);
+document.getElementById("flowList").innerHTML = ZONES.map((z, i) => `<li><i>${i + 1}</i>${z}</li>`).join("");
+const flowLis = [...document.querySelectorAll("#flowList li")];
+
+/* ───────── 물류 흐름 화살표 (순서대로 빛남) ───────── */
+const arrowShape = new THREE.Shape();
+arrowShape.moveTo(-0.35, -1.4); arrowShape.lineTo(0.35, -1.4); arrowShape.lineTo(0.35, 0.3); arrowShape.lineTo(0.85, 0.3);
+arrowShape.lineTo(0, 1.4); arrowShape.lineTo(-0.85, 0.3); arrowShape.lineTo(-0.35, 0.3); arrowShape.lineTo(-0.35, -1.4);
+const arrowGeo = new THREE.ShapeGeometry(arrowShape);
+const arrows = [];
+function arrow(x, z, dir, step) {
+  const m = new THREE.Mesh(arrowGeo, new THREE.MeshBasicMaterial({ color: 0x2563eb, transparent: true, opacity: 0.6, depthWrite: false, side: THREE.DoubleSide }));
+  m.rotation.order = "YXZ";
+  m.rotation.y = { "+z": Math.PI, "-z": 0, "-x": Math.PI / 2, "+x": -Math.PI / 2 }[dir];
+  m.rotation.x = -Math.PI / 2;
+  m.position.set(x, 0.05, z);
+  scene.add(m);
+  arrows.push({ m, step });
+}
+arrow(35.5, 6, "-z", 0);     // 입고 → 재고보관 (동쪽 이동 통로)
+arrow(21.4, -5.6, "+z", 1);   // 재고보관 → DPS
+arrow(8.8, 2.2, "-x", 2);     // DPS → DAS
+arrow(0.6, 2.2, "-x", 3);     // DAS → PAS
+arrow(-6.6, 3.4, "+z", 4);    // PAS → Sorter 투입
+arrow(-11.2, 4.2, "-z", 5);   // Sorter → Chute(뒤)
+arrow(-11.2, 13.8, "+z", 5);  // Sorter → Chute(앞)
+arrow(-26.5, 2.0, "-x", 6);   // 뒤쪽 집결 → 왼쪽 통로
+arrow(-31, 10, "+z", 6);      //   → 출하대기
+arrow(-13.5, 18.6, "+z", 6);  // 앞쪽 집결 → 출하대기
+arrow(-30, 22.4, "+z", 7);    // 출하대기 → 상차
+
+/* ───────── 지게차 · 작업자 ───────── */
+function makeForklift() {
+  const g = new THREE.Group();
+  box(1.4, 0.9, 2.1, mat.yellow, 0, 0.75, 0.2, g);
+  box(1.4, 1.1, 0.5, mat.dark, 0, 0.85, 1.25, g);
+  for (const x of [-0.6, 0.6]) box(0.1, 2.8, 0.1, mat.dark, x, 1.4, -0.9, g);
+  for (const [x, z] of [[-0.6, -0.4], [0.6, -0.4], [-0.6, 1.1], [0.6, 1.1]]) box(0.08, 1.4, 0.08, mat.dark, x, 1.9, z, g);
+  box(1.4, 0.08, 1.7, mat.dark, 0, 2.6, 0.35, g);
+  box(0.6, 0.6, 0.5, mat.vest, 0, 1.5, 0.4, g);
+  box(0.42, 0.42, 0.42, mat.skin, 0, 2.0, 0.4, g);
+  box(0.5, 0.14, 0.5, mat.yellow, 0, 2.27, 0.4, g);
+  const fork = new THREE.Group();
+  box(0.16, 0.06, 1.4, mat.steel, -0.35, 0.12, -1.6, fork);
+  box(0.16, 0.06, 1.4, mat.steel, 0.35, 0.12, -1.6, fork);
+  box(1.3, 0.12, 1.2, mat.wood, 0, 0.21, -1.6, fork);
+  box(1.0, 0.75, 0.95, mat.box, 0, 0.65, -1.6, fork);
+  g.add(fork);
+  g.userData.fork = fork;
+  scene.add(g);
+  return g;
+}
+/** 리치트럭(입식) — 팔레트랙 통로용. 서서 타는 운전석, 앞으로 뻗은 아웃리거, 높은 마스트, 앞으로 뻗는 포크 */
+function makeReachTruck() {
+  const g = new THREE.Group();
+  box(1.2, 1.1, 1.3, mat.yellow, 0, 0.7, 0.55, g);               // 차체(뒤쪽 배터리·카운터)
+  box(1.22, 0.14, 1.32, mat.dark, 0, 1.3, 0.55, g, false);
+  for (const x of [-0.5, 0.5]) {
+    box(0.16, 0.18, 1.7, mat.dark, x, 0.16, -0.75, g);            // 아웃리거(앞다리)
+    const w = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.14, 12), mat.tire);
+    w.rotation.z = Math.PI / 2; w.position.set(x, 0.16, -1.5); g.add(w);
+  }
+  for (const x of [-0.42, 0.42]) box(0.12, 3.9, 0.12, mat.dark, x, 1.95, -0.2, g); // 마스트
+  box(0.96, 0.12, 0.12, mat.dark, 0, 3.9, -0.2, g, false);
+  // 서서 타는 운전석: 발판 + 운전자(선 자세) + 머리 위 보호대
+  box(0.6, 0.1, 0.6, mat.dark, 0.2, 0.25, 1.05, g, false);
+  box(0.36, 0.8, 0.28, mat.dark, 0.2, 0.7, 1.05, g);
+  box(0.46, 0.66, 0.34, mat.vest, 0.2, 1.43, 1.05, g);
+  box(0.32, 0.32, 0.32, mat.skin, 0.2, 1.93, 1.05, g);
+  box(0.4, 0.1, 0.4, mat.yellow, 0.2, 2.14, 1.05, g);
+  for (const [x, z] of [[-0.55, 0.0], [0.55, 0.0], [-0.55, 1.3], [0.55, 1.3]]) box(0.07, 1.25, 0.07, mat.dark, x, 1.95, z, g, false);
+  box(1.2, 0.07, 1.4, mat.dark, 0, 2.58, 0.65, g, false);
+  // 포크 캐리지 — 올라가고(lift) 앞으로 뻗음(reach)
+  const fork = new THREE.Group();
+  box(0.9, 0.5, 0.08, mat.dark, 0, 0.45, -0.35, fork);
+  box(0.14, 0.05, 1.2, mat.steel, -0.3, 0.22, -1.0, fork);
+  box(0.14, 0.05, 1.2, mat.steel, 0.3, 0.22, -1.0, fork);
+  box(1.2, 0.12, 1.1, mat.wood, 0, 0.3, -1.0, fork);
+  box(0.95, 0.7, 0.9, mat.box2, 0, 0.71, -1.0, fork);
+  g.add(fork);
+  g.userData.fork = fork;
+  g.userData.liftH = 3.3;  // 위 단까지
+  g.userData.reach = 0.7;  // 앞으로 뻗는 거리
+  g.userData.face = 0;     // 멈췄을 때 바라볼 방향: 0 = 뒤쪽 랙, Math.PI = 앞쪽(DPS)
+  scene.add(g);
+  return g;
+}
+function makeWorker(carry = true) {
+  const g = new THREE.Group();
+  box(0.5, 0.8, 0.3, mat.dark, 0, 0.4, 0, g);
+  box(0.62, 0.72, 0.36, mat.vest, 0, 1.15, 0, g);
+  box(0.36, 0.36, 0.36, mat.skin, 0, 1.7, 0, g);
+  box(0.46, 0.12, 0.46, mat.yellow, 0, 1.94, 0, g);
+  if (carry) box(0.4, 0.3, 0.3, TOTE[0], 0, 1.15, -0.32, g);
+  scene.add(g);
+  return g;
+}
+function makeRollPusher() {
+  const g = new THREE.Group();
+  const w = makeWorker(false); scene.remove(w); w.position.set(0, 0, 1.1); g.add(w);
+  box(1.3, 1.5, 1.3, cageMat, 0, 0.8, -0.2, g, false);
+  box(1.0, 0.6, 1.0, mat.box, 0, 0.35, -0.2, g);
+  scene.add(g);
+  return g;
+}
+function mover(obj, pts, speed, wait, lift) {
+  return { obj, pts: pts.map(([x, z]) => new THREE.Vector3(x, 0, z)), i: 0, speed, wait, lift, pause: rand() * wait };
+}
+const movers = [
+  mover(makeReachTruck(), [[-3, -17.75], [31, -17.75]], 2.8, 2.2, true), // 랙 통로 — 리치트럭
+  mover(makeReachTruck(), [[31, -13.25], [-3, -13.25]], 2.6, 2.2, true),
+  mover(makeReachTruck(), [[12, -6.6], [31, -6.6]], 2.8, 1.8, true), // DPS 보충 — 리치트럭
+  mover(makeWorker(), [[12, -1.4], [20, -1.4]], 1.4, 1.0, false),        // DPS 피커
+  mover(makeWorker(), [[22, -1.4], [31, -1.4]], 1.5, 1.0, false),
+  mover(makeWorker(), [[2.5, -1.4], [8.5, -1.4]], 1.3, 1.2, false),      // DAS 분배
+  mover(makeRollPusher(), [[-6, 17.4], [-24, 17.4]], 1.6, 1.2, false),   // 집결 → 출하대기
+  mover(makeRollPusher(), [[-13, 19.4], [-13, 22.4]], 1.2, 1.6, false),  // 소형차 상차
+  mover(makeRollPusher(), [[-26, 2.4], [-31, 2.4], [-31, 17.4]], 1.7, 1.0, false),
+  mover(makeForklift(), [[-30, 19.2], [-30, 23.2]], 2.0, 1.4, true),     // 상차
+  mover(makeForklift(), [[-38, 23.2], [-38, 19.2]], 2.0, 1.4, true),
+  mover(makeForklift(), [[12, 23.2], [12, 19.6]], 2.0, 1.4, true),       // 입고 하차
+  mover(makeForklift(), [[28, 19.6], [28, 23.2]], 2.0, 1.4, true),
+  mover(makeForklift(), [[35.5, 15], [35.5, -20], [32.6, -20]], 3.0, 1.4, true), // 입고 → 재고보관 이동
+  mover(makeWorker(), [[10, 19.6], [24, 19.6]], 1.3, 1.4, false),        // 입고 검수
+];
+movers.forEach((m) => m.obj.position.copy(m.pts[0]));
+movers[2].obj.userData.face = Math.PI; // DPS 보충 리치트럭은 앞쪽 DPS를 봄
+function stepMover(m, dt) {
+  const fork = m.obj.userData.fork;
+  if (m.pause > 0) {
+    m.pause -= dt;
+    // 리치트럭은 멈추면 랙(또는 DPS) 쪽으로 돌아선 뒤 포크를 올리고 뻗는다
+    const face = m.obj.userData.face;
+    if (face !== undefined) {
+      const target = face === 0 ? 0 : m.obj.rotation.y >= 0 ? Math.PI : -Math.PI;
+      m.obj.rotation.y += (target - m.obj.rotation.y) * Math.min(1, dt * 5);
+    }
+    if (fork && m.lift) {
+      const k = Math.sin(Math.min(1, 1 - Math.max(0, m.pause) / m.wait) * Math.PI);
+      fork.position.y = k * (m.obj.userData.liftH ?? 1.4);
+      fork.position.z = -k * (m.obj.userData.reach ?? 0);
+    }
+    return;
+  }
+  const to = m.pts[(m.i + 1) % m.pts.length];
+  const d = to.clone().sub(m.obj.position);
+  const len = d.length();
+  if (len < 0.05) { m.i = (m.i + 1) % m.pts.length; m.pause = m.wait; return; }
+  m.obj.position.addScaledVector(d.normalize(), Math.min(len, m.speed * dt));
+  m.obj.rotation.y = Math.atan2(-d.x, -d.z);
+  if (!fork) m.obj.position.y = Math.abs(Math.sin(performance.now() / 160)) * 0.05;
+}
+
+/* ───────── 크로스벨트 캐리어 · 분류 ───────── */
+
+const carriers = Array.from({ length: 40 }, (_, i) => {
+  const m = box(1.0, 0.1, 1.0, mat.tray, 0, 1.03, 0);
+  const parcel = box(0.72, 0.5, 0.72, i % 2 ? mat.box : mat.box2, 0, 0.3, 0, m);
+  parcel.visible = false;
+  return { m, parcel, s: (i / 40) * LOOP, to: null, pass: -1 };
+});
+const slides = [];
+let todaySort = 4820;
+function stepSorter(dt) {
+  for (const c of carriers) {
+    c.s += dt * 3.2;
+    const [x, z] = loopPos(c.s);
+    c.m.position.x = x; c.m.position.z = z;
+    const sm = ((c.s % LOOP) + LOOP) % LOOP, pass = Math.floor(c.s / LOOP);
+    if (!c.to && c.pass !== pass && Math.abs(sm - (LX1 - -8.6)) < 0.4) {
+      c.pass = pass;
+      if (rand() < 0.85) { c.to = pick(chutes); c.parcel.visible = true; }
+    }
+    if (c.to) {
+      const onBack = sm < STR, onFront = sm >= STR + ARC && sm < 2 * STR + ARC;
+      if (((onBack && c.to.side < 0) || (onFront && c.to.side > 0)) && Math.abs(x - c.to.x) < 0.25) {
+        const p = box(0.72, 0.5, 0.72, mat.box, x, 1.33, z);
+        slides.push({ m: p, t: 0, x, z, to: c.to });
+        c.parcel.visible = false;
+        c.to = null;
+      }
+    }
+  }
+  for (let i = slides.length - 1; i >= 0; i--) {
+    const s = slides[i];
+    s.t += dt * 1.3;
+    const k = Math.min(1, s.t);
+    s.m.position.set(s.to.x, 1.33 - k * 0.8, s.z + (s.to.cageZ - s.z) * k);
+    if (s.t >= 1) {
+      scene.remove(s.m); s.m.geometry.dispose();
+      slides.splice(i, 1);
+      todaySort += 1;
+      bump("kSort", fmt(todaySort) + " 박스");
+      if (todaySort % 6 === 0) log("sort", `${s.to.store} Chute <b>분류 완료</b>`);
+    }
+  }
+}
+
+/* ───────── 재고 데이터 · 화면 ───────── */
+const badges = new Map();
+// 안전재고 미달 위치 위의 빨간 경고등(글자 없이)
+const beaconGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.32, 16);
+const beaconMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 1.4 });
+let todayIn = 1180, todayOut = 960;
+locs.forEach((l, i) => {
+  l.qty = i % 9 === 4 ? Math.round(l.safe * (0.3 + rand() * 0.5)) : Math.round(l.safe + rand() * (l.cap - l.safe));
+  paint(l);
+});
+function paint(l) {
+  const n = Math.ceil((l.qty / l.cap) * l.parts.length);
+  l.parts.forEach((p, i) => (p.visible = i < n));
+  const low = l.qty < l.safe;
+  if (low && !badges.has(l)) {
+    const b = new THREE.Mesh(beaconGeo, beaconMat);
+    b.position.copy(l.pos).add(new THREE.Vector3(0, -0.2, 0));
+    scene.add(b);
+    badges.set(l, b);
+  }
+  if (!low && badges.has(l)) { scene.remove(badges.get(l)); badges.delete(l); }
+}
+const fmt = (n) => n.toLocaleString("ko-KR");
+function bump(id, text) {
+  const el = document.getElementById(id);
+  if (el.textContent === text) return;
+  el.textContent = text;
+  el.classList.add("bump");
+  setTimeout(() => el.classList.remove("bump"), 500);
+}
+function hud() {
+  bump("kStock", fmt(locs.reduce((s, l) => s + l.qty, 0)) + " PCS");
+  bump("kLow", badges.size + "곳");
+  bump("kSort", fmt(todaySort) + " 박스");
+  bump("kIn", fmt(todayIn));
+  bump("kOut", fmt(todayOut));
+  const lows = [...badges.keys()].sort((a, b) => a.qty / a.safe - b.qty / b.safe).slice(0, 6);
+  document.getElementById("lowList").innerHTML = lows.map((l) => `<li><span>${l.id} <small>${l.item}</small></span><b>${l.qty}/${l.safe}</b></li>`).join("");
+}
+const logEl = document.getElementById("log");
+let clock = 9 * 60 + 12;
+function log(cls, text) {
+  const d = document.createElement("div");
+  d.className = cls;
+  const hh = String(Math.floor(clock / 60) % 24).padStart(2, "0"), mm = String(clock % 60).padStart(2, "0");
+  d.innerHTML = `<time>${hh}:${mm}</time>${text}`;
+  logEl.insertBefore(d, logEl.children[1] || null);
+  while (logEl.children.length > 7) logEl.lastChild.remove();
+}
+const flashes = [];
+const flashMat = new THREE.MeshBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.35, depthWrite: false });
+function flash(l) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.7, 1.5), flashMat.clone());
+  m.position.copy(l.pos).add(new THREE.Vector3(0, -1, 0));
+  scene.add(m);
+  flashes.push({ m, t: 0 });
+}
+function tickInventory() {
+  clock += 1;
+  const l = pick(locs);
+  const amt = Math.max(1, Math.round(l.cap * (0.05 + rand() * 0.15)));
+  const inbound = l.qty < l.safe ? rand() < 0.6 : rand() < 0.45;
+  const wasLow = l.qty < l.safe;
+  if (inbound) {
+    const add = Math.min(amt, l.cap - l.qty);
+    if (!add) return;
+    l.qty += add; todayIn += add;
+    log("in", `${l.id} ${l.item} <b>${l.id.startsWith("DPS") ? "보충" : "입고"} +${add}</b>`);
+  } else {
+    const take = Math.min(amt, l.qty);
+    if (!take) return;
+    l.qty -= take; todayOut += take;
+    const nowLow = l.qty < l.safe && !wasLow;
+    log(nowLow ? "low" : "out", `${l.id} ${l.item} <b>${nowLow ? "미달 " : ""}${l.id.startsWith("DPS") ? "피킹" : "출고"} −${take}</b>`);
+  }
+  paint(l); flash(l); hud();
+}
+hud();
+log("in", "센터 가동 — <b>WMS 재고 동기화 완료</b>");
+
+/* ───────── 화면 크기 · 반복 ───────── */
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h);
+  labels.setSize(w, h);
+  camera.aspect = w / h;
+  const far = w < 760 ? 1.5 : 1;
+  camera.position.set(46 * far, 52 * far, 64 * far);
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+resize();
+
+let running = true;
+addEventListener("message", (e) => { if (e.data === "pause") running = false; if (e.data === "resume") running = true; });
+
+for (let k = 0; k < 30; k++) pick(lights).material.emissive.setHex(pick([0x22c55e, 0x3b82f6]));
+let acc = 0, lampT = 0, flowT = 0, last = performance.now();
+function frame(now) {
+  requestAnimationFrame(frame);
+  const real = (now - last) / 1000;
+  const dt = Math.min(0.05, real);
+  last = now;
+  if (!running) return;
+  if (!reduce) {
+    movers.forEach((m) => stepMover(m, dt));
+    stepSorter(dt);
+    stepFleet(dt);
+    for (const c of cranes) {
+      c.ph += dt;
+      c.crane.position.x = ASRS_X0 + 3 + (Math.sin(c.ph * 0.35) * 0.5 + 0.5) * (ASRS_LEN - 6);
+      c.car.position.y = 0.6 + (Math.sin(c.ph * 0.9) * 0.5 + 0.5) * (ASRS_H - 1.4);
+    }
+    for (const it of convItems) { it.d = (it.d + dt * 2.4) % convLen; const [x, z] = convPos(it.d); it.m.position.x = x; it.m.position.z = z; }
+    for (const b of pasBoxes) { b.position.x -= dt * 1.4; if (b.position.x < PAS_X0 + 0.4) b.position.x = PAS_X1 - 0.4; }
+    lampT += dt;
+    if (lampT > 0.3) {
+      lampT = 0;
+      for (let k = 0; k < 6; k++) {
+        const l = pick(lights);
+        l.material.emissive.setHex(l.material.emissive.getHex() === 0 ? pick([0x22c55e, 0x22c55e, 0x3b82f6, 0xef4444]) : 0x000000);
+      }
+    }
+    // 흐름 화살표 · 작업 흐름 목록이 순서대로 빛남
+    beaconMat.emissiveIntensity = 0.6 + Math.abs(Math.sin(now / 300)) * 1.4;
+    flowT += dt;
+    const cur = Math.floor(flowT / 0.7) % 9;
+    for (const a of arrows) a.m.material.opacity = a.step === cur ? 0.95 : 0.4;
+    flowLis.forEach((li, i) => li.classList.toggle("on", i === cur));
+  }
+  acc += Math.min(1, real);
+  if (acc > (reduce ? 3 : 1.1)) { acc = 0; tickInventory(); }
+  for (let i = flashes.length - 1; i >= 0; i--) {
+    const f = flashes[i];
+    f.t += dt;
+    f.m.material.opacity = 0.35 * (1 - f.t / 1.2);
+    if (f.t > 1.2) { scene.remove(f.m); f.m.geometry.dispose(); f.m.material.dispose(); flashes.splice(i, 1); }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+  labels.render(scene, camera);
+}
+requestAnimationFrame(frame);
+window.__ok = true;
+</script>
+</body>
+</html>

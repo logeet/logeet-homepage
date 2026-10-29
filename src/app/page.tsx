@@ -3,6 +3,7 @@ import { Hero } from "@/components/Hero";
 import { Values } from "@/components/Values";
 import { Services } from "@/components/Services";
 import { Flow } from "@/components/Flow";
+import { Inventory3D } from "@/components/Inventory3D";
 import { OsTabs } from "@/components/OsTabs";
 import { QuoteForm } from "@/components/QuoteForm";
 import { Stories } from "@/components/Stories";
@@ -18,6 +19,7 @@ export default function Home() {
         <Values />
         <Services />
         <Flow />
+        <Inventory3D />
         <OsTabs />
         <Stories />
         <QuoteForm />
