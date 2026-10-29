@@ -524,13 +524,13 @@ export function OsTabs() {
     <section ref={sectionRef} id="os" aria-labelledby="os-title" className="on-dark border-t border-white/5 bg-navy-deep py-24 text-white sm:py-32">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         {/* 제품 소개 머리말 */}
-        <div className="reveal flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
+        <div className="reveal flex flex-col gap-8">
+          <div>
             <p className="flex items-center gap-3 text-[13px] font-bold uppercase tracking-[0.14em] text-sky-300">
               <span aria-hidden="true" className="h-px w-6 bg-sky-300" />
               LOGEET System
             </p>
-            <h2 id="os-title" className="mt-4 text-balance text-[1.75rem] font-bold leading-[1.3] tracking-[-0.02em] sm:text-4xl sm:leading-[1.25] lg:text-[2.6rem] lg:leading-[1.22]">
+            <h2 id="os-title" className="mt-4 text-balance text-[1.75rem] font-bold leading-[1.3] tracking-[-0.02em] sm:text-4xl sm:leading-[1.25] lg:whitespace-nowrap lg:text-[2.6rem] lg:leading-[1.22]">
               직접 개발한 시스템으로 운영과 비용을 한눈에 봅니다
             </h2>
             <p className="mt-5 text-base leading-[1.75] text-white/70 sm:text-lg">
@@ -541,7 +541,7 @@ export function OsTabs() {
             href={COMPANY.portalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex min-h-13 shrink-0 items-center gap-2 self-start rounded-sm bg-white px-6 text-[15px] font-bold text-navy transition-colors duration-200 hover:bg-sky-100 lg:self-auto"
+            className="group inline-flex min-h-13 shrink-0 items-center gap-2 self-start rounded-sm bg-white px-6 text-[15px] font-bold text-navy transition-colors duration-200 hover:bg-sky-100"
           >
             고객사 시스템 바로가기
             <ArrowUpRight aria-hidden="true" className="size-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

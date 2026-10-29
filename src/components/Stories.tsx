@@ -1,6 +1,9 @@
-import { Quote } from "lucide-react";
 import { TRUST, type Case } from "@/lib/trust";
 import { SectionTitle } from "./Services";
+import { STORY_ARTS } from "./StoryArt";
+
+// 카드 순서대로 업종 상품 그림: 패션(옷) / 생활용품 / 화장품
+const ARTS = STORY_ARTS;
 
 /*
  * 고객 사례 — trust.ts 의 cases(실제 사례)만 운영 사이트에 나온다.
@@ -39,12 +42,8 @@ export function Stories() {
         <SectionTitle
           id="stories-title"
           eyebrow="Success Stories"
-          title={
-            <>
-              <span className="block">로지트와 함께한 고객사들이</span>
-              <span className="block">운영과 비용의 변화를 경험하고 있습니다</span>
-            </>
-          }
+          title="로지트와 함께한 고객사들이 운영과 비용의 변화를 경험하고 있습니다"
+          oneLine
         />
 
         <ul className="mt-12 grid gap-5 lg:mt-14 lg:grid-cols-3">
@@ -54,8 +53,15 @@ export function Stories() {
               className="reveal flex flex-col rounded-xl border border-line bg-paper p-7 shadow-card transition-shadow duration-300 hover:shadow-panel sm:p-8"
               style={{ animationDelay: `${i * 80}ms` }}
             >
-              <Quote aria-hidden="true" className="size-7 text-blue/25" strokeWidth={2.5} />
-              <p className="mt-4 text-lg font-bold tracking-tight text-navy">
+              {(() => {
+                const Art = ARTS[i % ARTS.length];
+                return (
+                  <div className="-mx-2 -mt-2 mb-6 rounded-lg bg-gray px-10 pt-3 pb-1 sm:px-12">
+                    <Art />
+                  </div>
+                );
+              })()}
+              <p className="text-lg font-bold tracking-tight text-navy">
                 {c.client} <span className="text-[15px] font-semibold text-sub">({c.industry})</span>
               </p>
               <p className="mt-4 flex-1 text-[15px] leading-[1.8] text-body">{c.story}</p>
