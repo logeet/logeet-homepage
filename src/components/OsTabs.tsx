@@ -3,10 +3,33 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ArrowUpRight, Truck, CheckCircle2 } from "lucide-react";
 import { COMPANY } from "@/lib/company";
-import { ProductMockup } from "./ProductMockup";
+import { CostScreen } from "./CostScreen";
+import { CountUp } from "./CountUp";
 
-/** 시스템 화면을 단순화한 창 틀 (주소창 + 본문) */
-function Window({ children }: { children: React.ReactNode }) {
+/** 창 위쪽에 돌아가며 뜨는 작업 소식 (예시) — 초록 불빛과 함께 '일하는 중' 느낌 */
+function Ticker({ items }: { items: string[] }) {
+  const [i, setI] = useState(0);
+  const reduced = useSyncExternalStore(subscribeReduce, () => window.matchMedia(REDUCE).matches, () => false);
+  useEffect(() => {
+    if (reduced) return;
+    const t = setInterval(() => setI((v) => (v + 1) % items.length), 2600);
+    return () => clearInterval(t);
+  }, [items.length, reduced]);
+  return (
+    <span aria-hidden="true" className="ml-4 hidden min-w-0 flex-1 items-center gap-2 text-[12px] font-semibold text-emerald-700 md:flex">
+      <span className="relative flex size-2 shrink-0">
+        {!reduced && <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-60" />}
+        <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+      </span>
+      <span key={i} className="rise-in truncate">
+        {items[i]}
+      </span>
+    </span>
+  );
+}
+
+/** 시스템 화면을 단순화한 창 틀 (주소창 + 작업 소식 + 본문) */
+function Window({ children, feed }: { children: React.ReactNode; feed: string[] }) {
   return (
     <div className="flex h-full flex-col overflow-hidden bg-white text-ink">
       <div className="flex items-center gap-2 border-b border-line bg-gray px-5 py-3">
@@ -16,10 +39,11 @@ function Window({ children }: { children: React.ReactNode }) {
         <span className="ml-3 rounded border border-line bg-white px-3 py-1 text-[12px] font-medium text-body">
           center.logeet.co.kr
         </span>
-        <span className="ml-auto text-[12px] font-semibold text-sub">예시 데이터</span>
+        <Ticker items={feed} />
+        <span className="ml-auto shrink-0 pl-3 text-[12px] font-semibold text-sub">예시 데이터</span>
       </div>
       {/* 본문은 남는 높이를 채운다 — 각 화면의 마지막 블록(flex-1)이 늘어나 아래 빈 공간이 생기지 않음 */}
-      <div className="flex flex-1 flex-col p-5 sm:p-7">{children}</div>
+      <div className="os-sweep flex flex-1 flex-col p-5 sm:p-7">{children}</div>
     </div>
   );
 }
@@ -30,11 +54,11 @@ const fmt = (n: number) => n.toLocaleString("ko-KR");
 function Kpis({ items }: { items: [label: string, value: string, unit: string, accent?: boolean][] }) {
   return (
     <dl className="grid grid-cols-3 divide-x divide-line rounded-md border border-line">
-      {items.map(([l, v, u, a]) => (
-        <div key={l} className="px-3 py-3 sm:px-4">
+      {items.map(([l, v, u, a], k) => (
+        <div key={l} className="os-pop px-3 py-3 sm:px-4" style={{ animationDelay: `${k * 90}ms` }}>
           <dt className="text-[11px] font-semibold text-sub sm:text-[12px]">{l}</dt>
           <dd className={`mt-1.5 text-lg font-bold leading-none tabular-nums sm:text-xl ${a ? "text-blue" : "text-ink"}`}>
-            {v}
+            <CountUp value={v} />
             <span className="ml-0.5 text-[11px] font-medium text-sub">{u}</span>
           </dd>
         </div>
@@ -72,8 +96,13 @@ function MiniBars({ data, labels, highlight }: { data: number[]; labels: string[
       {data.map((v, i) => (
         <div key={labels[i]} className="flex flex-1 flex-col items-center">
           <GrowBar value={v} max={max}>
-            <span className="mb-1 text-[10px] tabular-nums text-sub">{fmt(v)}</span>
-            <div className={`w-full rounded-t-sm ${i === highlight ? "bg-blue" : "bg-blue/25"}`} style={{ flex: v }} />
+            <span className="os-pop mb-1 text-[10px] tabular-nums text-sub" style={{ animationDelay: `${300 + i * 70}ms` }}>
+              {fmt(v)}
+            </span>
+            <div
+              className={`os-grow-y w-full rounded-t-sm ${i === highlight ? "os-live bg-linear-to-t from-blue to-sky-400 shadow-[0_0_18px_rgba(29,78,216,0.55)]" : "bg-blue/25"}`}
+              style={{ flex: v, animationDelay: `${i * 70}ms` }}
+            />
           </GrowBar>
           <span className="mt-1.5 text-[11px] text-sub">{labels[i]}</span>
         </div>
@@ -90,6 +119,8 @@ const RACK = [
   [1, 2, 2, 2, 2, 2, 0, 2],
 ];
 const CELL = ["bg-slate-200", "bg-blue/40", "bg-blue"];
+// 지금 팔레트가 들어오고 있는 빈 칸들과 각자 시작 시각
+const STORING: Record<number, string> = { 6: "1.2s", 13: "2.6s", 26: "3.8s" };
 
 const ZONES: [string, number][] = [
   ["A구역", 86],
@@ -103,7 +134,7 @@ function StorageView() {
   const cells = RACK.flat();
   const rate = Math.round((cells.reduce((s, c) => s + c, 0) / (cells.length * 2)) * 100);
   return (
-    <Window>
+    <Window feed={["A구역 입고 38팔레트 적치 완료", "B-03 로케이션 재고 실사 완료", "C구역 피킹 지시 24건 전달", "오늘 출고 642박스 처리 중"]}>
       <Kpis
         items={[
           ["적재율", `${rate}`, "%", true],
@@ -114,9 +145,16 @@ function StorageView() {
       <div className="mt-6 grid gap-6 sm:grid-cols-[1.5fr_1fr]">
         <div>
           <PanelTitle>랙 적재 현황</PanelTitle>
-          <div className="mt-3 grid grid-cols-8 gap-1">
+          <div className="relative mt-3 grid grid-cols-8 gap-1 overflow-hidden">
+            <span aria-hidden="true" className="os-scan pointer-events-none absolute inset-x-0 top-0 z-10 h-1/4" />
             {cells.map((c, i) => (
-              <span key={i} className={`h-6 rounded-[2px] sm:h-8 ${CELL[c]}`} />
+              <span
+                key={i}
+                className={`os-pop h-6 rounded-[2px] sm:h-8 ${CELL[c]}`}
+                style={{ animationDelay: `${i * 18}ms` }}
+              >
+                {STORING[i] && <span className="os-store block size-full rounded-[2px]" style={{ animationDelay: STORING[i] }} />}
+              </span>
             ))}
           </div>
           <div className="mt-3 flex gap-4 text-[11px] text-body">
@@ -138,7 +176,7 @@ function StorageView() {
                   <span className="tabular-nums text-body">{v}%</span>
                 </div>
                 <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-gray">
-                  <div className="h-full rounded-full bg-blue" style={{ width: `${v}%` }} />
+                  <div className="os-grow-x h-full rounded-full bg-blue" style={{ width: `${v}%`, animationDelay: "200ms" }} />
                 </div>
               </li>
             ))}
@@ -165,7 +203,7 @@ function RouteView() {
   const fixed = ROUTES.filter((r) => r.type === "고정계약").reduce((s, r) => s + r.cost, 0);
   const total = temp + fixed;
   return (
-    <Window>
+    <Window feed={["노선 A 3호차 출발", "노선 C 임시차 배차 확정", "노선 B 도착 확인", "주차별 운송비 집계 반영"]}>
       <Kpis
         items={[
           ["임시차 누적", fmt(temp), "만원", true],
@@ -187,12 +225,15 @@ function RouteView() {
                     {r.name} <span className="ml-1 text-[11px] font-medium text-sub">{r.type} · {r.trips}회</span>
                   </p>
                   <p className="shrink-0 text-[14px] font-bold tabular-nums">
-                    {fmt(r.cost)}
+                    <CountUp value={fmt(r.cost)} />
                     <span className="ml-0.5 text-[11px] font-medium text-sub">만원</span>
                   </p>
                 </div>
                 <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-gray">
-                  <div className={`h-full rounded-full ${r.type === "임시차" ? "bg-blue" : "bg-slate-400"}`} style={{ width: `${(r.cost / total) * 100}%` }} />
+                  <div
+                    className={`os-grow-x h-full rounded-full ${r.type === "임시차" ? "bg-blue" : "bg-slate-400"}`}
+                    style={{ width: `${(r.cost / total) * 100}%`, animationDelay: "200ms" }}
+                  />
                 </div>
               </div>
             </li>
@@ -208,7 +249,7 @@ function RouteView() {
 }
 
 const PARCEL = { b2c: 7740, b2b: 4740 };
-const PARCEL_COST = { b2c: 1180, b2b: 470 }; // 물류비 대시보드 6월 B2C·B2B 택배비와 같은 예시 값
+const PARCEL_COST = { b2c: 1180, b2b: 470 }; // 물류비 리포트 탭 6월 B2C·B2B 택배비와 같은 예시 값
 // 최근 6개월 채널별 출고 (마지막 = 이번 달)
 const PARCEL_TREND = {
   m: ["1월", "2월", "3월", "4월", "5월", "6월"],
@@ -226,19 +267,40 @@ function ParcelView() {
   const mom = ((total - prev) / prev) * 100;
   const max = Math.max(...sums);
   return (
-    <Window>
+    <Window feed={["B2C 택배 120박스 접수", "B2B 출고 42박스 집하 완료", "운송장 386건 발행", "채널별 택배비 집계 반영"]}>
       <PanelTitle note="박스">이번 달 택배 출고</PanelTitle>
       <div className="mt-4 flex items-center gap-6 sm:gap-8">
         <svg viewBox="0 0 140 140" className="size-28 shrink-0 -rotate-90 sm:size-32" aria-hidden="true">
+          <circle
+            cx="70"
+            cy="70"
+            r="66"
+            fill="none"
+            stroke="#93c5fd"
+            strokeWidth="2"
+            strokeDasharray="3 7"
+            className="animate-[spin_14s_linear_infinite]"
+            style={{ transformOrigin: "70px 70px" }}
+          />
           <circle cx="70" cy="70" r={R} fill="none" stroke="#0d9488" strokeWidth="18" />
-          <circle cx="70" cy="70" r={R} fill="none" stroke="#1d4ed8" strokeWidth="18" strokeDasharray={`${b2c * L - 3} ${L}`} />
+          <circle
+            cx="70"
+            cy="70"
+            r={R}
+            fill="none"
+            stroke="#1d4ed8"
+            strokeWidth="18"
+            strokeDasharray={`${b2c * L - 3} ${L}`}
+            className="os-draw"
+            style={{ "--len": `${b2c * L}` } as React.CSSProperties}
+          />
         </svg>
         <div className="flex-1">
           <div className="flex items-baseline justify-between gap-3">
             <div>
               <p className="text-[12px] text-sub">총 출고</p>
               <p className="text-2xl font-bold tabular-nums">
-                {fmt(total)}
+                <CountUp value={fmt(total)} />
                 <span className="ml-1 text-sm font-medium text-sub">박스</span>
               </p>
             </div>
@@ -272,8 +334,13 @@ function ParcelView() {
           {PARCEL_TREND.m.map((m, i) => (
             <div key={m} className="flex flex-1 flex-col items-center">
               <GrowBar value={sums[i]} max={max}>
-                <span className="mb-1 text-[10px] tabular-nums text-sub">{fmt(sums[i])}</span>
-                <div className="flex w-full flex-col overflow-hidden rounded-t-sm" style={{ flex: sums[i] }}>
+                <span className="os-pop mb-1 text-[10px] tabular-nums text-sub" style={{ animationDelay: `${300 + i * 70}ms` }}>
+                  {fmt(sums[i])}
+                </span>
+                <div
+                  className={`os-grow-y flex w-full flex-col overflow-hidden rounded-t-sm ${i === sums.length - 1 ? "os-live" : ""}`}
+                  style={{ flex: sums[i], animationDelay: `${i * 70}ms` }}
+                >
                   <div className="bg-blue" style={{ flex: PARCEL_TREND.b2c[i] }} />
                   <div className="bg-teal-600" style={{ flex: PARCEL_TREND.b2b[i] }} />
                 </div>
@@ -283,7 +350,7 @@ function ParcelView() {
           ))}
         </div>
       </div>
-      {/* 채널별 택배 비용 — 물류비 대시보드 6월 예시 값과 같음 */}
+      {/* 채널별 택배 비용 — 물류비 리포트 탭 6월 예시 값과 같음 */}
       <div className="mt-6 border-t border-line pt-5">
         <PanelTitle note="이번 달 · 만원">채널별 택배 비용</PanelTitle>
         <dl className="mt-3 grid grid-cols-2 gap-3">
@@ -297,13 +364,22 @@ function ParcelView() {
                 {k}
               </dt>
               <dd className="mt-1.5 text-lg font-bold tabular-nums">
-                {fmt(v as number)}
+                <CountUp value={fmt(v as number)} />
                 <span className="ml-0.5 text-[11px] font-medium text-sub">만원</span>
               </dd>
             </div>
           ))}
         </dl>
       </div>
+    </Window>
+  );
+}
+
+/** 물류비 리포트 — 예산 대비 실적 · 운송 유형별 비용 · 월별 상세 · 택배비 추이 */
+function CostView() {
+  return (
+    <Window feed={["6월 운송비 마감 반영", "임시차 비용 3건 정산 반영", "예산 집행률 갱신", "운송 유형별 비용 집계 완료"]}>
+      <CostScreen />
     </Window>
   );
 }
@@ -319,7 +395,7 @@ function InsightView() {
   const tempSum = temp.reduce((s, r) => s + r.cost, 0);
   const top = temp.reduce((a, r) => (r.cost > a.cost ? r : a));
   const [zone, zoneRate] = ZONES.reduce((a, z) => (z[1] > a[1] ? z : a));
-  // 3월 계획 4,300 · 실적 4,700 — 물류비 대시보드 섹션의 예시 값
+  // 3월 계획 4,300 · 실적 4,700 — 물류비 리포트 탭의 예시 값
   const marchOver = Math.round(((4700 - 4300) / 4300) * 100);
   // 센터 운영 현황 탭의 최근 7일 출고(OUTBOUND)에서 계산
   const peak = Math.max(...OUTBOUND);
@@ -340,7 +416,7 @@ function InsightView() {
   ];
 
   return (
-    <Window>
+    <Window feed={["새 인사이트 2건 생성", "물동량 변화 감지", "적재율 85% 초과 구역 알림", "주간 요약 완료"]}>
       <div className="flex items-center justify-between gap-3">
         <p className="flex items-center gap-2.5 text-[17px] font-bold text-blue">
           <span aria-hidden="true" className="h-5 w-1 rounded-full bg-blue" />
@@ -351,7 +427,7 @@ function InsightView() {
       {/* 문장 행들이 남는 높이를 고르게 나눠 가짐 */}
       <ul className="mt-5 flex flex-1 flex-col divide-y divide-line border-y border-line">
         {items.map((it, n) => (
-          <li key={n} className="flex flex-1 items-center gap-3 py-3.5">
+          <li key={n} className="rise-in flex flex-1 items-center gap-3 py-3.5" style={{ animationDelay: `${150 + n * 220}ms` }}>
             <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-blue" />
             <p className="flex-1 text-[14px] leading-relaxed text-charcoal">
               {it.parts.map((p, i) =>
@@ -389,7 +465,7 @@ const TABS = [
   { key: "운영 현황", title: "센터 운영 현황", desc: "적재율·재고·출고 추이를 봅니다.", View: StorageView },
   { key: "운송", title: "임시차 · 운송 비용", desc: "노선별 비용을 임시차·고정계약으로 나눠 봅니다.", View: RouteView },
   { key: "택배", title: "택배 B2B · B2C", desc: "채널별 물량과 비용을 봅니다.", View: ParcelView },
-  { key: "리포트", title: "예산 대비 실적", desc: "월별 계획 대비 실적과 집행률을 봅니다.", View: ProductMockup },
+  { key: "리포트", title: "물류비 리포트", desc: "예산 대비 집행률과 항목별 비용을 봅니다.", View: CostView },
   { key: "인사이트", title: "분석 인사이트", desc: "주요 변화를 문장으로 요약해 알려줍니다.", View: InsightView },
 ];
 
@@ -487,7 +563,7 @@ export function OsTabs() {
                   aria-controls="os-panel"
                   onClick={() => pick(i)}
                   className={`group relative overflow-hidden rounded-md border px-5 py-4 text-left transition-colors duration-200 ${
-                    on ? "border-white bg-white text-navy shadow-[0_16px_32px_-16px_rgba(0,0,0,0.6)]" : "border-white/10 hover:border-white/25 hover:bg-white/[0.03]"
+                    on ? "border-white bg-white text-navy shadow-[0_0_44px_-10px_rgba(59,130,246,0.75)]" : "border-white/10 hover:border-white/25 hover:bg-white/[0.03]"
                   }`}
                 >
                   <span className={`text-[12px] font-bold tabular-nums tracking-[0.12em] ${on ? "text-blue" : "text-sky-300/70"}`}>
@@ -512,7 +588,7 @@ export function OsTabs() {
           {/* 제품 화면 — 얇은 바깥 틀 안에 크게 */}
           {/* 자동으로 넘어가는 동안엔 화면 읽기 프로그램이 매번 읽지 않도록 */}
           <div id="os-panel" aria-live={running ? "off" : "polite"} className="flex min-w-0 flex-col">
-            <div className="flex-1 rounded-xl bg-white/[0.04] p-1.5 ring-1 ring-white/10 sm:p-2.5 lg:min-h-[660px]">
+            <div className="flex-1 rounded-xl bg-white/[0.04] p-1.5 shadow-[0_0_90px_-24px_rgba(59,130,246,0.55)] ring-1 ring-sky-300/20 sm:p-2.5 lg:min-h-[660px]">
               <div key={tab.key} className="rise-in h-full overflow-hidden rounded-lg bg-white shadow-product">
                 <tab.View />
               </div>

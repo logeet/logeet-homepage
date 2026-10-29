@@ -11,7 +11,7 @@ const NAV = [
   { href: "#fulfillment", label: "풀필먼트" },
   { href: "#transport", label: "운송 서비스" },
   { href: "#parcel", label: "택배 서비스" },
-  { href: "#dashboard", label: "물류비 분석·시스템" },
+  { href: "#os", label: "물류비 분석·시스템" },
 ];
 
 export function Header() {
