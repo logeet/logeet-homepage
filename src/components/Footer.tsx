@@ -26,6 +26,8 @@ const INFO: [string, React.ReactNode][] = [
 const LINKS = [
   { href: "#why", label: "회사 소개" },
   { href: "#services", label: "서비스" },
+  { href: "#flow", label: "운영 프로세스" },
+  { href: "#inventory", label: "3D 재고 관제" },
   { href: "#os", label: "물류비 분석·시스템" },
   { href: "#quote", label: "견적 문의" },
 ];
