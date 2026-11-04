@@ -588,6 +588,31 @@ function makeRollPusher() {
   scene.add(g);
   return g;
 }
+/** AMR(자율주행 로봇) — 낮은 본체 + 파란 라이다 링. kind "tote" = 박스 운반, "shelf" = 선반째 이동(GTP) */
+const amrGlow = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x38bdf8, emissiveIntensity: 1.2 });
+function makeAMR(kind = "tote", parked = false) {
+  const g = new THREE.Group();
+  box(1.2, 0.3, 0.95, mat.white, 0, 0.3, 0, g);
+  box(1.22, 0.06, 0.97, mat.blue, 0, 0.18, 0, g, false);
+  box(1.24, 0.05, 0.12, amrGlow, 0, 0.3, -0.5, g, false); // 앞쪽 라이다 라인
+  box(1.0, 0.06, 0.8, mat.beam, 0, 0.48, 0, g, false);     // 리프트 상판
+  if (kind === "shelf") {
+    for (const x of [-0.42, 0.42]) for (const z of [-0.32, 0.32]) box(0.06, 1.5, 0.06, mat.steel, x, 1.26, z, g, false);
+    for (let t = 0; t < 3; t++) {
+      const y = 0.75 + t * 0.55;
+      box(0.95, 0.04, 0.75, mat.steel, 0, y, 0, g, false);
+      box(0.38, 0.32, 0.55, TOTE[(t + 1) % 3], -0.22, y + 0.18, 0, g);
+      if (t !== 1) box(0.38, 0.32, 0.55, mat.box, 0.22, y + 0.18, 0, g);
+    }
+  } else {
+    box(0.8, 0.4, 0.6, mat.box, 0, 0.71, 0, g);
+    if (!parked) box(0.6, 0.3, 0.5, TOTE[0], 0, 1.07, 0, g);
+  }
+  g.userData.amr = true;
+  g.scale.setScalar(1.3);
+  scene.add(g);
+  return g;
+}
 function mover(obj, pts, speed, wait, lift) {
   return { obj, pts: pts.map(([x, z]) => new THREE.Vector3(x, 0, z)), i: 0, speed, wait, lift, pause: rand() * wait };
 }
@@ -607,7 +632,31 @@ const movers = [
   mover(makeForklift(), [[28, 19.6], [28, 23.2]], 2.0, 1.4, true),
   mover(makeForklift(), [[35.5, 15], [35.5, -20], [32.6, -20]], 3.0, 1.4, true), // 입고 → 재고보관 이동
   mover(makeWorker(), [[10, 19.6], [24, 19.6]], 1.3, 1.4, false),        // 입고 검수
+  // AMR — 입고·DPS 사이 통로(2줄)와 왼쪽 빈 공간
+  mover(makeAMR("tote"), [[12, 3.8], [21, 3.8]], 2.2, 0.8, false),
+  mover(makeAMR("tote"), [[32, 3.8], [23, 3.8]], 2.4, 0.8, false),
+  mover(makeAMR("shelf"), [[12, 6.8], [21, 6.8]], 1.9, 1.0, false),
+  mover(makeAMR("shelf"), [[32, 6.8], [23, 6.8]], 2.0, 1.0, false),
+  mover(makeAMR("tote"), [[-39, 4], [-34, 4], [-34, 15], [-39, 15]], 2.3, 0.5, false),
+  mover(makeAMR("shelf"), [[-34, 15], [-39, 15], [-39, 4], [-34, 4]], 2.0, 0.5, false),
 ];
+// AMR 피킹존 — 자동창고 앞 빈 바닥: 선반 포드 2줄 + 통로를 오가는 로봇
+zone(-41, -8.4, -10.5, 0, 0xe0f2fe);
+for (const z of [-6.8, -3.2]) for (let i = 0; i < 9; i++) {
+  const p = makeAMR("shelf", true);
+  p.position.set(-38.5 + i * 3.2, 0, z);
+}
+movers.push(
+  mover(makeAMR("tote"), [[-39, -1.4], [-12, -1.4]], 2.6, 0.6, false),
+  mover(makeAMR("tote"), [[-12, -0.1], [-39, -0.1]], 2.2, 0.6, false),
+  mover(makeAMR("shelf"), [[-38, -5], [-13, -5]], 2.0, 0.8, false),
+);
+// 충전 스테이션 — 대기 중인 AMR 2대
+{
+  box(3.2, 0.03, 1.6, mat.apron, -40, 0.02, 9.6, scene, false);
+  box(3.2, 0.06, 0.12, amrGlow, -40, 0.05, 8.8, scene, false);
+  [-40.8, -39.2].forEach((x) => { const a = makeAMR("tote", true); a.position.set(x, 0, 9.8); });
+}
 movers.forEach((m) => m.obj.position.copy(m.pts[0]));
 movers[2].obj.userData.face = Math.PI; // DPS 보충 리치트럭은 앞쪽 DPS를 봄
 function stepMover(m, dt) {
@@ -632,8 +681,12 @@ function stepMover(m, dt) {
   const len = d.length();
   if (len < 0.05) { m.i = (m.i + 1) % m.pts.length; m.pause = m.wait; return; }
   m.obj.position.addScaledVector(d.normalize(), Math.min(len, m.speed * dt));
-  m.obj.rotation.y = Math.atan2(-d.x, -d.z);
-  if (!fork) m.obj.position.y = Math.abs(Math.sin(performance.now() / 160)) * 0.05;
+  const ang = Math.atan2(-d.x, -d.z);
+  if (m.obj.userData.amr) {
+    const da = Math.atan2(Math.sin(ang - m.obj.rotation.y), Math.cos(ang - m.obj.rotation.y));
+    m.obj.rotation.y += da * Math.min(1, dt * 8); // 코너에서 부드럽게 회전
+  } else m.obj.rotation.y = ang;
+  if (!fork && !m.obj.userData.amr) m.obj.position.y = Math.abs(Math.sin(performance.now() / 160)) * 0.05;
 }
 
 /* ───────── 크로스벨트 캐리어 · 분류 ───────── */
@@ -806,6 +859,7 @@ function frame(now) {
     }
     // 흐름 화살표 · 작업 흐름 목록이 순서대로 빛남
     beaconMat.emissiveIntensity = 0.6 + Math.abs(Math.sin(now / 300)) * 1.4;
+    amrGlow.emissiveIntensity = 0.7 + Math.abs(Math.sin(now / 450)) * 1.1;
     flowT += dt;
     const cur = Math.floor(flowT / 0.7) % 9;
     for (const a of arrows) a.m.material.opacity = a.step === cur ? 0.95 : 0.4;
